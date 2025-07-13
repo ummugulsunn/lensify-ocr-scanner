@@ -1,0 +1,22 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "dart.flutterSdkPath": "/opt/homebrew/Caskroom/flutter/3.29.3/flutter",
+    "java.configuration.runtimes": [
+      {
+        "name": "JavaSE-21",
+        "path": "/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home"
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "dart-code.dart-code",
+      "dart-code.flutter"
+    ]
+  }
+} 

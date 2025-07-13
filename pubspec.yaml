@@ -1,0 +1,53 @@
+name: lensify
+description: "Lensify - OCR Scanner & PDF Generator"
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI & Icons
+  cupertino_icons: ^1.0.8
+  
+  # Image & Camera
+  image_picker: ^1.1.2
+  permission_handler: ^12.0.1
+  image: ^4.1.7  # Image processing
+  
+  # OCR & ML
+  google_mlkit_text_recognition: ^0.15.0
+  flutter_tesseract_ocr: ^0.4.26  # Tesseract OCR Engine
+  google_mlkit_digital_ink_recognition: ^0.14.1  # Handwriting recognition
+  
+  # PDF & File Operations
+  pdf: ^3.10.7
+  path_provider: ^2.1.1
+  share_plus: ^11.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+# Flutter configuration
+flutter:
+  uses-material-design: true
+  
+  # Assets configuration (uncomment when needed)
+  # assets:
+  #   - assets/images/
+  #   - assets/icons/
+  
+  # Custom fonts configuration (uncomment when needed)
+  # fonts:
+  #   - family: SF Pro Display
+  #     fonts:
+  #       - asset: assets/fonts/SF-Pro-Display-Regular.ttf
+  #       - asset: assets/fonts/SF-Pro-Display-Bold.ttf
+  #         weight: 700
