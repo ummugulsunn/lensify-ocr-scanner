@@ -45,5 +45,22 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- Camera and Photo Library Permissions for OCR Scanner -->
+	<key>NSCameraUsageDescription</key>
+	<string>Bu uygulama belgeleri taramak için kameraya erişim gerektirir.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Bu uygulama fotoğraf galerisinden resim seçmek için erişim gerektirir.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Bu uygulama kamera kullanımı sırasında mikrofona erişim gerektirebilir.</string>
+	
+	<!-- App Transport Security Settings -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

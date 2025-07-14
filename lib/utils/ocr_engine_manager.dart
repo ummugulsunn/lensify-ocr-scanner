@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:flutter_tesseract_ocr/flutter_tesseract_ocr.dart';
 
@@ -34,6 +35,29 @@ class OCRResult {
       errorMessage: errorMessage,
     );
   }
+
+  /// JSON'a dönüştür
+  Map<String, dynamic> toJson() => {
+    'text': text,
+    'confidence': confidence,
+    'engine': engine.name,
+    'processingTime': processingTime.inMilliseconds,
+    'isSuccess': isSuccess,
+    'errorMessage': errorMessage,
+  };
+
+  /// JSON'dan oluştur
+  factory OCRResult.fromJson(Map<String, dynamic> json) => OCRResult(
+    text: json['text'] ?? '',
+    confidence: (json['confidence'] ?? 0.0).toDouble(),
+    engine: OCREngine.values.firstWhere(
+      (e) => e.name == json['engine'],
+      orElse: () => OCREngine.googleMLKit,
+    ),
+    processingTime: Duration(milliseconds: json['processingTime'] ?? 0),
+    isSuccess: json['isSuccess'] ?? false,
+    errorMessage: json['errorMessage'],
+  );
 }
 
 /// OCR motor türleri
@@ -319,16 +343,25 @@ class OCREngineManager {
     final textLength = result.text.trim().split(' ').length;
     score += (textLength * 2).clamp(0, 30);
 
-    // Motor tercihi (ML Kit > Tesseract > Cloud Vision for offline)
+    // Türkçe diyakritik bonusu
+    final turkishDiacritics = 'ğĞüÜşŞöÖçÇıİ';
+    final diacriticCount = result.text.runes.where((r) => turkishDiacritics.contains(String.fromCharCode(r))).length;
+    if (textLength > 0) {
+      final diacriticRatio = diacriticCount / result.text.length;
+      // Max +20 puan
+      score += diacriticRatio * 20;
+    }
+
+    // Motor tercihi (Tesseract Türkçe metinlerde genelde daha iyi)
     switch (result.engine) {
-      case OCREngine.googleMLKit:
+      case OCREngine.tesseract:
         score += 20;
         break;
-      case OCREngine.googleMLKitHandwriting:
-        score += 18; // El yazısı tanıma biraz daha az güvenilir
-        break;
-      case OCREngine.tesseract:
+      case OCREngine.googleMLKit:
         score += 15;
+        break;
+      case OCREngine.googleMLKitHandwriting:
+        score += 13;
         break;
       case OCREngine.cloudVision:
         score += 25;
@@ -382,9 +415,52 @@ class OCREngineManager {
       case 'spa':
       case 'es':
         return 'spa';
+      case 'rus':
+      case 'ru':
+        return 'rus';
+      case 'chi_sim':
+      case 'zh-cn':
+        return 'chi_sim';
+      case 'jpn':
+      case 'ja':
+        return 'jpn';
+      case 'kor':
+      case 'ko':
+        return 'kor';
+      case 'ita':
+      case 'it':
+        return 'ita';
+      case 'por':
+      case 'pt':
+        return 'por';
+      case 'nld':
+      case 'nl':
+        return 'nld';
       default:
         return 'eng'; // Varsayılan
     }
+  }
+  
+  /// Desteklenen dillerin listesi
+  static const Map<String, String> supportedLanguages = {
+    'tr': 'Türkçe',
+    'en': 'English',
+    'ar': 'العربية',
+    'de': 'Deutsch',
+    'fr': 'Français',
+    'es': 'Español',
+    'ru': 'Русский',
+    'zh': '中文',
+    'ja': '日本語',
+    'ko': '한국어',
+    'it': 'Italiano',
+    'pt': 'Português',
+    'nl': 'Nederlands',
+  };
+  
+  /// Kullanıcı locale'ine göre OCR dili belirle
+  static String getOCRLanguageFromLocale(Locale locale) {
+    return locale.languageCode;
   }
 
   /// Motor durumunu kontrol et

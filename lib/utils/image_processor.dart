@@ -1,23 +1,66 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
 
 class ImageProcessor {
-  /// Görüntüyü OCR için optimize eder
+  static const int _maxImageSize = 1920; // Max width/height for processing
+  static const int _jpegQuality = 85; // Balanced quality vs size
+  
+  /// Görüntüyü OCR için optimize eder - Memory optimized version
   static Future<File> optimizeForOCR(File originalFile, {
     ImageEnhancementLevel level = ImageEnhancementLevel.auto,
   }) async {
     try {
-      // Orijinal görüntüyü yükle
-      final bytes = await originalFile.readAsBytes();
+      // Check file size first to prevent memory issues
+      final fileSize = await originalFile.length();
+      if (fileSize > 50 * 1024 * 1024) { // 50MB limit
+        throw Exception('Görüntü çok büyük (>50MB). Daha küçük bir görüntü seçin.');
+      }
+      
+      // Use compute() for heavy image processing to avoid blocking UI
+      final optimizedBytes = await compute(_processImageInIsolate, ImageProcessingRequest(
+        filePath: originalFile.path,
+        level: level,
+        maxSize: _maxImageSize,
+        quality: _jpegQuality,
+      ));
+      
+      if (optimizedBytes != null) {
+        final optimizedFile = await _saveOptimizedImage(optimizedBytes, originalFile.path);
+        return optimizedFile;
+      } else {
+        // Fallback to original file if processing fails
+        return originalFile;
+      }
+    } catch (e) {
+      // Hata durumunda orijinal dosyayı geri döndür
+      return originalFile;
+    }
+  }
+
+  /// Process image in isolate to prevent UI blocking
+  static Uint8List? _processImageInIsolate(ImageProcessingRequest request) {
+    try {
+      // Read and decode image
+      final bytes = File(request.filePath).readAsBytesSync();
       img.Image? image = img.decodeImage(bytes);
       
-      if (image == null) {
-        throw Exception('Görüntü decode edilemedi');
+      if (image == null) return null;
+
+      // Resize if too large (memory optimization)
+      if (image.width > request.maxSize || image.height > request.maxSize) {
+        final ratio = request.maxSize / (image.width > image.height ? image.width : image.height);
+        image = img.copyResize(
+          image,
+          width: (image.width * ratio).round(),
+          height: (image.height * ratio).round(),
+          interpolation: img.Interpolation.linear, // Fast interpolation
+        );
       }
 
-      // Enhancement level'a göre işle
-      switch (level) {
+      // Apply enhancement based on level
+      switch (request.level) {
         case ImageEnhancementLevel.basic:
           image = _applyBasicEnhancement(image);
           break;
@@ -32,14 +75,10 @@ class ImageProcessor {
           break;
       }
 
-      // Optimized görüntüyü kaydet
-      final optimizedBytes = img.encodeJpg(image, quality: 95);
-      final optimizedFile = await _saveOptimizedImage(optimizedBytes, originalFile.path);
-      
-      return optimizedFile;
+      // Encode with optimized quality
+      return img.encodeJpg(image, quality: request.quality);
     } catch (e) {
-      // Hata durumunda orijinal dosyayı geri döndür
-      return originalFile;
+      return null;
     }
   }
 
@@ -224,6 +263,21 @@ enum ImageEnhancementLevel {
   advanced,  // Gelişmiş iyileştirmeler
   auto,      // Otomatik optimizasyon
   document,  // Belge odaklı (binary)
+}
+
+/// Image processing request for isolate communication
+class ImageProcessingRequest {
+  final String filePath;
+  final ImageEnhancementLevel level;
+  final int maxSize;
+  final int quality;
+  
+  ImageProcessingRequest({
+    required this.filePath,
+    required this.level,
+    required this.maxSize,
+    required this.quality,
+  });
 }
 
 /// Görüntü istatistikleri

@@ -1,30 +1,91 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'dart:io';
 import 'text_editor_screen.dart';
 import 'utils/image_processor.dart';
 import 'utils/ocr_engine_manager.dart';
+import 'utils/async_ocr_processor.dart';
+import 'theme/theme_provider.dart';
+import 'services/credit_manager.dart';
+import 'settings_dialog.dart';
+import 'animations/animations.dart';
+import 'l10n/app_localizations.dart';
+import 'utils/error_handler.dart';
+import 'utils/ocr_cache_manager.dart';
+import 'utils/performance_monitor.dart';
+import 'utils/memory_manager.dart';
+import 'database/ocr_history_database.dart';
+import 'screens/ocr_history_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'dart:developer' as developer;
+import 'package:crypto/crypto.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize services
+  final themeProvider = ThemeProvider();
+  final creditManager = CreditManager();
+  
+  await themeProvider.initialize();
+  await creditManager.initialize();
+  await OCRCacheManager.instance.initialize();
+  await PerformanceMonitor.instance.initialize();
+  
+  // Initialize OCR History Database
+  try {
+    await OCRHistoryDatabase.instance.database;
+  } catch (e) {
+    debugPrint('Database initialization error: $e');
+    // Continue app startup even if database fails
+  }
+  
+  runApp(MyApp(
+    themeProvider: themeProvider,
+    creditManager: creditManager,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final ThemeProvider themeProvider;
+  final CreditManager creditManager;
+  
+  const MyApp({
+    super.key,
+    required this.themeProvider,
+    required this.creditManager,
+  });
 
   @override
   Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: themeProvider),
+        Provider.value(value: creditManager),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
     return MaterialApp(
       title: 'Lensify OCR Scanner',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-        fontFamily: 'SF Pro Display',
-      ),
+            theme: themeProvider.getTheme(context),
+            themeMode: themeProvider.themeMode.toMaterialThemeMode(),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: themeProvider.locale,
       home: const OCRHomePage(),
+          );
+        },
+      ),
     );
   }
 }
@@ -39,7 +100,7 @@ class OCRHomePage extends StatefulWidget {
 class _OCRHomePageState extends State<OCRHomePage> {
   final ImagePicker _picker = ImagePicker();
   File? _selectedImage;
-  List<File> _selectedImages = []; // Batch scanning için
+  final List<File> _selectedImages = []; // Batch scanning için
   String _statusMessage = '';
   String _extractedText = '';
   bool _isProcessing = false;
@@ -50,23 +111,63 @@ class _OCRHomePageState extends State<OCRHomePage> {
   OCRQuality _ocrQuality = OCRQuality.balanced; // OCR kalite seviyesi
   final List<OCRResult> _ocrHistory = []; // OCR geçmişi
 
-  // Color constants for better maintainability
-  static const _gradientColors = [
-    Color(0xFF667eea),
-    Color(0xFF764ba2),
-    Color(0xFFf093fb),
-    Color(0xFFf5576c),
-  ];
+  // Kredi sistemi için
+  int _currentCredits = 0;
+
+
+  
+  @override
+  void initState() {
+    super.initState();
+    _loadCreditInfo();
+  }
+  
+  @override
+  void dispose() {
+    // Cleanup memory resources
+    MemoryManager.dispose();
+    super.dispose();
+  }
+  
+  Future<void> _loadCreditInfo() async {
+    final creditManager = Provider.of<CreditManager>(context, listen: false);
+    final credits = await creditManager.getCurrentCredits();
+    
+    setState(() {
+      _currentCredits = credits;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        final theme = Theme.of(context);
+        final isDark = themeProvider.isDarkMode(context);
+        
+        // Theme-aware gradient colors
+        final gradientColors = isDark 
+          ? [
+              const Color(0xFF1E293B),
+              const Color(0xFF334155),
+              const Color(0xFF475569),
+              const Color(0xFF64748B),
+            ]
+          : [
+              const Color(0xFF667eea),
+              const Color(0xFF764ba2),
+              const Color(0xFFf093fb),
+              const Color(0xFFf5576c),
+            ];
+        
     return Scaffold(
+          backgroundColor: theme.colorScheme.surface,
       body: Container(
-        decoration: const BoxDecoration(
+            decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: _gradientColors,
+                colors: gradientColors,
           ),
         ),
         child: SafeArea(
@@ -74,89 +175,211 @@ class _OCRHomePageState extends State<OCRHomePage> {
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
-                _buildHeader(),
+                    AppAnimations.fadeIn(
+                      child: _buildHeader(),
+                      duration: AppAnimations.medium,
+                    ),
                 const SizedBox(height: 20),
-                _buildModeSelector(), // Yeni: Mod seçici
+                    AppAnimations.slideInFromRight(
+                      child: _buildModeSelector(),
+                      duration: AppAnimations.medium,
+                    ),
                 const SizedBox(height: 20),
-                _isBatchMode ? _buildBatchImageSection() : _buildImageSection(),
+                    AppAnimations.scaleIn(
+                      child: _isBatchMode ? _buildBatchImageSection() : _buildImageSection(),
+                      duration: AppAnimations.medium,
+                    ),
                 const SizedBox(height: 30),
-                _buildImagePickerButtons(),
+                    AppAnimations.bounceInAnimation(
+                      child: _buildImagePickerButtons(),
+                      duration: AppAnimations.medium,
+                    ),
                 const SizedBox(height: 20),
                 if ((_selectedImage != null && !_isBatchMode) || 
-                    (_selectedImages.isNotEmpty && _isBatchMode)) ...[
-                  _buildEnhancementSelector(),
-                  const SizedBox(height: 15),
-                  _buildOCRQualitySelector(),
-                  const SizedBox(height: 15),
-                  _buildHandwritingModeSelector(),
-                  const SizedBox(height: 15),
-                  _buildOCRButton(),
-                ],
+                        (_selectedImages.isNotEmpty && _isBatchMode))
+                      _buildOcrOptions(),
                 const SizedBox(height: 20),
-                if (_statusMessage.isNotEmpty) _buildStatusCard(),
-                if (_extractedText.isNotEmpty) _buildResultCard(),
+                    if (_statusMessage.isNotEmpty) 
+                      AppAnimations.fadeIn(
+                        child: _buildStatusCard(),
+                        duration: AppAnimations.fast,
+                      ),
+                    if (_extractedText.isNotEmpty) 
+                      AppAnimations.slideInFromBottom(
+                        child: _buildResultCard(),
+                        duration: AppAnimations.medium,
+                      ),
               ],
             ),
           ),
         ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildOcrOptions() {
+    return AppAnimations.fadeIn(
+      child: Column(
+        children: [
+          AppAnimations.slideInFromBottom(
+            child: _buildEnhancementSelector(),
+          ),
+          const SizedBox(height: 15),
+          AppAnimations.slideInFromBottom(
+            child: _buildOCRQualitySelector(),
+          ),
+          const SizedBox(height: 15),
+          AppAnimations.slideInFromBottom(
+            child: _buildHandwritingModeSelector(),
+          ),
+          const SizedBox(height: 15),
+          AppAnimations.scaleIn(
+            child: _buildOCRButton(),
+            curve: AppAnimations.elasticOut,
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildHeader() {
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        final isDark = themeProvider.isDarkMode(context);
+        
     return _buildGlassCard(
-      child: const Column(
+          isDark: isDark,
+          child: Column(
         children: [
-          Icon(Icons.document_scanner_outlined, size: 50, color: Colors.white),
-          SizedBox(height: 10),
+              // Top row with settings and credits
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Settings button - daha görünür hale getir
+                  Container(
+                    decoration: BoxDecoration(
+                      color: isDark 
+                        ? Colors.white.withValues(alpha: 0.1) 
+                        : Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: IconButton(
+                      onPressed: _showSettingsDialog,
+                      icon: Icon(
+                        Icons.settings, 
+                        color: isDark ? Colors.white : Colors.white, 
+                        size: 24
+                      ),
+                      tooltip: 'Ayarlar',
+                    ),
+                  ),
+                  // Credits info
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                                      color: isDark 
+                  ? Colors.white.withValues(alpha: 0.1) 
+                  : Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.credit_card, 
+                          size: 16, 
+                          color: isDark ? Colors.white : Colors.white
+                        ),
+                        const SizedBox(width: 4),
           Text(
-            'Lensify',
+                          '$_currentCredits ${context.l10n.credits}',
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Logo and title
+              AppAnimations.scaleIn(
+                child: Icon(
+                  Icons.document_scanner_outlined, 
+                  size: 50, 
+                  color: isDark ? Colors.white : Colors.white
+                ),
+              ),
+              const SizedBox(height: 10),
+          Text(
+            context.l10n.appTitle,
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+                  color: isDark ? Colors.white : Colors.white,
               letterSpacing: 1.2,
             ),
           ),
           Text(
-            'OCR Scanner & PDF',
+            context.l10n.appSubtitle,
             style: TextStyle(
               fontSize: 16,
-              color: Colors.white70,
+                  color: isDark ? Colors.white70 : Colors.white70,
               letterSpacing: 0.8,
             ),
           ),
         ],
       ),
+        );
+      },
     );
   }
 
   Widget _buildModeSelector() {
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        final isDark = themeProvider.isDarkMode(context);
+        
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.15),
+            color: isDark 
+              ? Colors.white.withValues(alpha: 0.1) 
+              : Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+            border: Border.all(
+              color: isDark 
+                ? Colors.white.withValues(alpha: 0.2) 
+                : Colors.white.withValues(alpha: 0.3)
+            ),
       ),
       child: Row(
         children: [
           Expanded(
             child: _buildModeButton(
-              label: 'Tek Resim',
+              label: context.l10n.singleImage,
               isSelected: !_isBatchMode,
               onTap: () => _switchMode(false),
+                  isDark: isDark,
             ),
           ),
           Expanded(
             child: _buildModeButton(
-              label: 'Çoklu Resim',
+              label: context.l10n.multipleImages,
               isSelected: _isBatchMode,
               onTap: () => _switchMode(true),
+                  isDark: isDark,
             ),
           ),
         ],
       ),
+        );
+      },
     );
   }
 
@@ -164,12 +387,13 @@ class _OCRHomePageState extends State<OCRHomePage> {
     required String label,
     required bool isSelected,
     required VoidCallback onTap,
+    required bool isDark,
   }) {
     return Container(
       height: 45,
       decoration: BoxDecoration(
         color: isSelected 
-          ? Colors.white.withValues(alpha: 0.3) 
+          ? (isDark ? Colors.white.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.3))
           : Colors.transparent,
         borderRadius: BorderRadius.circular(16),
       ),
@@ -182,7 +406,9 @@ class _OCRHomePageState extends State<OCRHomePage> {
             child: Text(
               label,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white60,
+                color: isSelected 
+                  ? (isDark ? Colors.white : Colors.white) 
+                  : (isDark ? Colors.white60 : Colors.white60),
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
@@ -239,9 +465,9 @@ class _OCRHomePageState extends State<OCRHomePage> {
               ),
               TextButton(
                 onPressed: _clearBatchImages,
-                child: const Text(
-                  'Temizle',
-                  style: TextStyle(
+                child: Text(
+                  context.l10n.clear,
+                  style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
                   ),
@@ -251,43 +477,42 @@ class _OCRHomePageState extends State<OCRHomePage> {
           ),
           const SizedBox(height: 10),
           SizedBox(
-            height: 200,
+            height: 180,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: _selectedImages.length,
               itemBuilder: (context, index) {
                 return Container(
-                  width: 140,
+                  width: 120,
                   margin: const EdgeInsets.only(right: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                  ),
                   child: Stack(
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(15),
                         child: Image.file(
                           _selectedImages[index],
-                          width: 140,
-                          height: 200,
                           fit: BoxFit.cover,
+                          width: 120,
+                          height: 180,
                         ),
                       ),
                       Positioned(
                         top: 5,
                         right: 5,
                         child: Container(
-                          width: 25,
-                          height: 25,
                           decoration: BoxDecoration(
-                            color: Colors.black54,
-                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.red.withValues(alpha: 0.8),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                           child: IconButton(
-                            padding: EdgeInsets.zero,
-                            onPressed: () => _removeImageFromBatch(index),
-                            icon: const Icon(
-                              Icons.close,
-                              color: Colors.white,
-                              size: 16,
-                            ),
+                            icon: const Icon(Icons.close, color: Colors.white, size: 16),
+                            onPressed: () => _removeBatchImage(index),
+                            padding: const EdgeInsets.all(4),
+                            constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
                           ),
                         ),
                       ),
@@ -295,12 +520,9 @@ class _OCRHomePageState extends State<OCRHomePage> {
                         bottom: 5,
                         left: 5,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.black54,
+                            color: Colors.black.withValues(alpha: 0.7),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
@@ -308,7 +530,7 @@ class _OCRHomePageState extends State<OCRHomePage> {
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
@@ -325,9 +547,9 @@ class _OCRHomePageState extends State<OCRHomePage> {
   }
 
   Widget _buildBatchImagePlaceholder() {
-    return SizedBox(
+    return const SizedBox(
       height: 250,
-      child: const Center(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -363,64 +585,39 @@ class _OCRHomePageState extends State<OCRHomePage> {
   Widget _buildSelectedImageView() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(25),
-      child: Stack(
-        children: [
-          Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25),
-              image: DecorationImage(
-                image: FileImage(_selectedImage!),
+      child: Image.file(
+        _selectedImage!,
                 fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Positioned(
-            top: 10,
-            right: 10,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black54,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Icon(
-                Icons.check_circle,
-                color: Colors.green,
-                size: 20,
-              ),
-            ),
-          ),
-        ],
+        width: double.infinity,
+        height: 250,
       ),
     );
   }
 
   Widget _buildImagePlaceholder() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.add_photo_alternate_outlined,
             size: 60,
             color: Colors.white60,
           ),
-          SizedBox(height: 15),
+          const SizedBox(height: 15),
           Text(
-            'Resim Seçin',
-            style: TextStyle(
+            context.l10n.selectImage,
+            style: const TextStyle(
               fontSize: 18,
               color: Colors.white70,
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Text(
-            'Kamera veya galeri kullanarak\nmetin içeren bir resim seçin',
+            context.l10n.selectImageInstruction,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: Colors.white54,
             ),
@@ -438,7 +635,7 @@ class _OCRHomePageState extends State<OCRHomePage> {
             Expanded(
               child: _buildActionButton(
                 icon: Icons.camera_alt_outlined,
-                label: _isPickingImage ? 'Bekleyiniz...' : 'Kamera',
+                label: _isPickingImage ? context.l10n.pleaseWait : context.l10n.camera,
                 onTap: () => _isBatchMode ? _pickBatchImages(ImageSource.camera) : _pickImage(ImageSource.camera),
                 isEnabled: !_isProcessing && !_isPickingImage,
               ),
@@ -447,14 +644,85 @@ class _OCRHomePageState extends State<OCRHomePage> {
             Expanded(
               child: _buildActionButton(
                 icon: Icons.photo_library_outlined,
-                label: _isPickingImage ? 'Bekleyiniz...' : 'Galeri',
+                label: _isPickingImage ? context.l10n.pleaseWait : context.l10n.gallery,
                 onTap: () => _isBatchMode ? _pickBatchImages(ImageSource.gallery) : _pickImage(ImageSource.gallery),
                 isEnabled: !_isProcessing && !_isPickingImage,
               ),
             ),
           ],
         ),
+
       ],
+    );
+  }
+
+  Widget _buildGlassCard({required Widget child, bool isDark = false}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark 
+          ? Colors.white.withValues(alpha: 0.1) 
+          : Colors.white.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark 
+            ? Colors.white.withValues(alpha: 0.2) 
+            : Colors.white.withValues(alpha: 0.3)
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    required bool isEnabled,
+  }) {
+    return Container(
+      height: 60,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: isEnabled ? 0.2 : 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: isEnabled ? onTap : null,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  color: isEnabled ? Colors.white : Colors.white38,
+                  size: 24,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: isEnabled ? Colors.white : Colors.white38,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -594,13 +862,13 @@ class _OCRHomePageState extends State<OCRHomePage> {
   String _getEnhancementLevelName(ImageEnhancementLevel level) {
     switch (level) {
       case ImageEnhancementLevel.basic:
-        return 'Temel';
+        return context.l10n.basic;
       case ImageEnhancementLevel.advanced:
-        return 'Gelişmiş';
+        return context.l10n.advanced;
       case ImageEnhancementLevel.auto:
-        return 'Otomatik';
+        return context.l10n.automatic;
       case ImageEnhancementLevel.document:
-        return 'Belge';
+        return context.l10n.document;
     }
   }
 
@@ -613,9 +881,9 @@ class _OCRHomePageState extends State<OCRHomePage> {
             children: [
               const Icon(Icons.speed_outlined, color: Colors.white, size: 20),
               const SizedBox(width: 8),
-              const Text(
-                'OCR Kalitesi',
-                style: TextStyle(
+              Text(
+                context.l10n.ocrQuality,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -757,58 +1025,14 @@ class _OCRHomePageState extends State<OCRHomePage> {
   String _getOCRQualityName(OCRQuality quality) {
     switch (quality) {
       case OCRQuality.fast:
-        return 'Hızlı';
+        return context.l10n.fast;
       case OCRQuality.balanced:
-        return 'Dengeli';
+        return context.l10n.balanced;
       case OCRQuality.accurate:
-        return 'Doğru';
+        return context.l10n.accurate;
       case OCRQuality.premium:
-        return 'Premium';
+        return context.l10n.premium;
     }
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-    required bool isEnabled,
-  }) {
-    return Container(
-      height: 60,
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: isEnabled ? 0.2 : 0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: isEnabled ? onTap : null,
-          child: Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  icon,
-                  color: isEnabled ? Colors.white : Colors.white38,
-                  size: 24,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: isEnabled ? Colors.white : Colors.white38,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   Widget _buildHandwritingModeSelector() {
@@ -817,22 +1041,22 @@ class _OCRHomePageState extends State<OCRHomePage> {
         children: [
           const Icon(Icons.edit_outlined, color: Colors.white, size: 20),
           const SizedBox(width: 8),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'El Yazısı Tanıma',
-                  style: TextStyle(
+                  context.l10n.handwritingRecognition,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  'Not fotoğraflarından el yazısını metne dönüştür',
-                  style: TextStyle(
+                  context.l10n.handwritingMode,
+                  style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 12,
                   ),
@@ -882,21 +1106,17 @@ class _OCRHomePageState extends State<OCRHomePage> {
           onTap: _isProcessing ? null : _performOCR,
           child: Center(
             child: _isProcessing
-                ? const Row(
+                ? Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
+                      AppAnimations.loadingDots(
+                        color: Colors.white,
+                        size: 6.0,
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 15),
                       Text(
-                        'Metin Çıkarılıyor...',
-                        style: TextStyle(
+                        context.l10n.extractingText,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -914,7 +1134,7 @@ class _OCRHomePageState extends State<OCRHomePage> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        _isBatchMode ? 'Toplu Metin Çıkar' : 'Metin Çıkar',
+                        _isBatchMode ? context.l10n.batchMode : context.l10n.extractText,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -957,7 +1177,7 @@ class _OCRHomePageState extends State<OCRHomePage> {
               ),
               const SizedBox(width: 10),
               Text(
-                _isBatchMode ? 'Toplu Çıkarılan Metin' : 'Çıkarılan Metin',
+                _isBatchMode ? context.l10n.batchMode : context.l10n.extractedTextTitle,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -1050,27 +1270,137 @@ class _OCRHomePageState extends State<OCRHomePage> {
     );
   }
 
-  Widget _buildGlassCard({required Widget child}) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+  // --- Fonksiyonlar ---
+
+
+
+  Future<void> _copyToClipboard() async {
+    if (_extractedText.isNotEmpty) {
+      await Clipboard.setData(ClipboardData(text: _extractedText));
+      if (!mounted) return;
+      _showSnackbar(context.l10n.textCopiedToClipboard);
+    }
+  }
+
+  void _showSnackbar(String message) {
+    // Enhanced success message kullan
+    ErrorHandler.showSuccess(context, message);
+  }
+
+  void _switchMode(bool isBatchMode) {
+    setState(() {
+      _isBatchMode = isBatchMode;
+      _selectedImage = null;
+      _selectedImages.clear();
+      _extractedText = '';
+      _statusMessage = '';
+    });
+  }
+
+  void _clearBatchImages() {
+    setState(() {
+      _selectedImages.clear();
+      _extractedText = '';
+      _statusMessage = '';
+    });
+  }
+
+  void _removeBatchImage(int index) {
+    setState(() {
+      _selectedImages.removeAt(index);
+      if (_selectedImages.isEmpty) {
+        _extractedText = '';
+        _statusMessage = '';
+      }
+    });
+  }
+
+  void _clearStatusAfterDelay(int seconds) {
+    Future.delayed(Duration(seconds: seconds), () {
+      if (mounted) {
+        setState(() {
+          _statusMessage = '';
+        });
+      }
+    });
+  }
+
+  void _updateStatus({
+    bool? isProcessing,
+    bool? isPickingImage,
+    String? message,
+    File? selectedImage,
+    String? extractedText,
+  }) {
+    setState(() {
+      if (isProcessing != null) _isProcessing = isProcessing;
+      if (isPickingImage != null) _isPickingImage = isPickingImage;
+      if (message != null) _statusMessage = message;
+      if (selectedImage != null) _selectedImage = selectedImage;
+      if (extractedText != null) _extractedText = extractedText;
+    });
+  }
+
+  void _openTextEditor() {
+    Navigator.push(
+      context,
+      AppAnimations.createRoute(
+        page: TextEditorScreen(initialText: _extractedText, l10n: context.l10n),
+        duration: AppAnimations.medium,
       ),
-      child: child,
+    );
+  }
+  
+  void _showSettingsDialog() {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: Colors.transparent,
+      transitionDuration: const Duration(milliseconds: 400),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return SettingsDialog(
+          onCreditsChanged: _loadCreditInfo,
+          l10n: context.l10n,
+        );
+      },
+    );
+  }
+  
+  void _showInsufficientCreditsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.insufficientCredits),
+        content: Text(
+          context.l10n.insufficientCreditsMessage,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(context.l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _showSettingsDialog();
+            },
+            child: Text(context.l10n.buyCredits),
+          ),
+        ],
+      ),
     );
   }
 
+  // Mock functions - bunları gerçek implementasyonlarla değiştirin
   Future<void> _pickImage(ImageSource source) async {
     if (_isPickingImage) return;
 
     _updateStatus(
       isPickingImage: true,
       message: source == ImageSource.gallery
-          ? 'Galeri açılıyor... (Lütfen bekleyiniz)'
-          : 'Kamera açılıyor...',
+                  ? context.l10n.galleryOpening
+        : context.l10n.cameraOpening,
     );
 
     await Future.delayed(const Duration(milliseconds: 100));
@@ -1120,8 +1450,8 @@ class _OCRHomePageState extends State<OCRHomePage> {
     _updateStatus(
       isPickingImage: true,
       message: source == ImageSource.gallery
-          ? 'Galeri açılıyor... (Çoklu mod)'
-          : 'Kamera açılıyor... (Çoklu mod)',
+                  ? context.l10n.galleryOpeningMulti
+        : context.l10n.cameraOpeningMulti,
     );
 
     await Future.delayed(const Duration(milliseconds: 100));
@@ -1167,7 +1497,8 @@ class _OCRHomePageState extends State<OCRHomePage> {
   Future<bool> _requestCameraPermission() async {
     final cameraPermission = await Permission.camera.request();
     if (!cameraPermission.isGranted) {
-      _showPermissionDialog('Kamera izni gerekli');
+      if (!mounted) return false;
+      _showPermissionDialog(context.l10n.cameraPermissionRequired);
       return false;
     }
     return true;
@@ -1176,21 +1507,62 @@ class _OCRHomePageState extends State<OCRHomePage> {
   void _handleImagePickerError(dynamic e) {
     _updateStatus(
       isPickingImage: false,
-      message: 'Galeri hatası! Tekrar deneyin.',
+              message: context.l10n.galleryError,
     );
     _clearStatusAfterDelay(3);
 
-    if (e.toString().contains('zaman aşımı')) {
-      _showErrorDialog('Galeri açılırken sorun oluştu. Lütfen tekrar deneyin.');
-    }
+    // Enhanced error handling kullan
+    ErrorHandler.handleError(
+      context,
+      e,
+              customMessage: context.l10n.galleryErrorRetry,
+      onRetry: () {
+        // Galeri açmayı tekrar dene
+        _pickImage(ImageSource.gallery);
+      },
+    );
   }
 
   Future<void> _performOCR() async {
     if (_selectedImage == null && _selectedImages.isEmpty) return;
 
-    _updateStatus(isProcessing: true, message: 'Görüntü iyileştiriliyor...');
+    // Kredi kontrolü
+    final creditManager = Provider.of<CreditManager>(context, listen: false);
+    final imageCount = _selectedImage != null ? 1 : _selectedImages.length;
+    final ocrType = _selectedImage != null ? OCRType.single : OCRType.batch;
+    
+    final canUseCredits = await creditManager.useOCRCredits(
+      type: ocrType,
+      imageCount: imageCount,
+      isHandwriting: _isHandwritingMode,
+      isPremiumQuality: _ocrQuality == OCRQuality.premium,
+    );
+    
+    if (!context.mounted) return;
+    if (!canUseCredits) {
+      _showInsufficientCreditsDialog();
+      return;
+    }
+
+    if (!mounted) return;
+    
+    // Memory check before processing
+    if (_selectedImage != null) {
+      final isAcceptable = await MemoryManager.isImageSizeAcceptable(_selectedImage!);
+      if (!isAcceptable) {
+        if (!mounted) return;
+        ErrorHandler.handleError(context, 'Image too large', customMessage: 'Resim çok büyük. Daha küçük bir resim seçin.');
+        return;
+      }
+    }
+    
+    if (!mounted) return;
+    _updateStatus(isProcessing: true, message: context.l10n.optimizingImage);
 
     try {
+      // Check memory before processing
+      await MemoryManager.checkMemoryUsage();
+      
       if (_selectedImage != null) {
         // Tek resim OCR (Enhancement + OCR)
         await _performSingleImageOCR(_selectedImage!);
@@ -1198,49 +1570,144 @@ class _OCRHomePageState extends State<OCRHomePage> {
         // Batch OCR
         await _performBatchOCR();
       }
+      
+      // Kredi bilgilerini güncelle
+      await _loadCreditInfo();
+      
+      // Memory cleanup after processing
+      await MemoryManager.checkMemoryUsage();
     } catch (e) {
+      if (!mounted) return;
       _updateStatus(
         isProcessing: false,
         message: 'OCR işlemi sırasında hata oluştu',
         extractedText: 'OCR işlemi sırasında hata oluştu',
       );
-      _showErrorDialog('Metin çıkarma sırasında hata oluştu');
+      
+      // Enhanced error handling kullan
+      ErrorHandler.handleError(
+        context,
+        e,
+        customMessage: context.l10n.extractionError,
+        onRetry: () {
+          // OCR işlemini tekrar dene
+          _performOCR();
+        },
+      );
     }
   }
 
   Future<void> _performSingleImageOCR(File imageFile) async {
     try {
-      // 1. Görüntü iyileştirme
-      _updateStatus(isProcessing: true, message: 'Görüntü optimize ediliyor...');
+      // Provider'ı async işlemlerden önce al
+      final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+      final ocrLanguage = OCREngineManager.getOCRLanguageFromLocale(themeProvider.locale);
+      final l10n = context.l10n;
+      
+      // Cache konfigürasyonu oluştur
+      final cacheConfig = OCRCacheConfig(
+        quality: _ocrQuality,
+        language: ocrLanguage,
+        isHandwriting: _isHandwritingMode,
+        enhancementLevel: _enhancementLevel,
+      );
+
+      // 1. Önce cache'den kontrol et
+      final cachedResult = await OCRCacheManager.instance.getCachedResult(
+        imageFile,
+        cacheConfig,
+      );
+
+      if (cachedResult != null) {
+        // Cache hit - sonucu direkt kullan
+        _ocrHistory.add(cachedResult);
+        
+        if (!mounted) return;
+        _updateStatus(
+          isProcessing: false,
+          message: '${_buildOCRResultMessage(cachedResult, l10n)} (Önbellekten)',
+          extractedText: cachedResult.text.isEmpty ? context.l10n.noTextFound : cachedResult.text,
+        );
+        
+        if (mounted) {
+          ErrorHandler.showInfo(context, 'Sonuç önbellekten getirildi');
+        }
+        return;
+      }
+
+      // 2. Cache miss - normal OCR işlemi
+      _updateStatus(isProcessing: true, message: l10n.imageOptimizing);
       
       final optimizedFile = await ImageProcessor.optimizeForOCR(
         imageFile,
         level: _enhancementLevel,
       );
 
-      // 2. OCR işlemi - Çoklu motor desteği
+      // 3. OCR işlemi - Performance monitoring ile
       _updateStatus(
         isProcessing: true, 
         message: _getOCRProcessingMessage(_ocrQuality),
       );
       
-      final ocrResult = await OCREngineManager.performOCR(
+      // Performance monitoring context oluştur
+      final imageSize = await imageFile.length();
+      
+      final operationContext = OCROperationContext(
+        quality: _ocrQuality,
+        language: ocrLanguage,
+        isHandwritingMode: _isHandwritingMode,
+        isBatchMode: false,
+        imageCount: 1,
+        imageSize: imageSize,
+      );
+      
+      // OCR işlemini performance monitoring ile wrap et - Optimized version
+      final ocrResult = await PerformanceMonitor.instance.trackOCROperation(
+        () => OptimizedOCRManager.performOptimizedOCR(
         optimizedFile,
         quality: _ocrQuality,
-        language: 'tur',
+          language: ocrLanguage,
         isHandwritingMode: _isHandwritingMode,
+        ),
+        operationContext,
+      );
+
+      // 4. Sonucu cache'e kaydet
+      await OCRCacheManager.instance.cacheResult(
+        imageFile,
+        ocrResult,
+        cacheConfig,
       );
 
       // OCR geçmişine ekle
       _ocrHistory.add(ocrResult);
       
+      // Database'e kaydet
+      try {
+        final historyEntry = OCRHistoryEntry.fromOCRResult(
+          ocrResult,
+          language: ocrLanguage,
+          quality: _ocrQuality.name,
+          isHandwriting: _isHandwritingMode,
+          isBatch: false,
+          imageCount: 1,
+          imageSize: await imageFile.length(),
+          imagePath: imageFile.path,
+          imageHash: await _calculateImageHash(imageFile),
+        );
+        await OCRHistoryDatabase.instance.saveOCRResult(historyEntry);
+      } catch (e) {
+        developer.log('Error saving to history database: $e');
+      }
+      
+      if (!mounted) return;
       _updateStatus(
         isProcessing: false,
-        message: _buildOCRResultMessage(ocrResult),
-        extractedText: ocrResult.text.isEmpty ? 'Metin bulunamadı' : ocrResult.text,
+        message: _buildOCRResultMessage(ocrResult, l10n),
+        extractedText: ocrResult.text.isEmpty ? context.l10n.noTextFound : ocrResult.text,
       );
 
-      // 3. Optimize edilmiş dosyayı temizle (orijinal değilse)
+      // 5. Optimize edilmiş dosyayı temizle (orijinal değilse)
       if (optimizedFile.path != imageFile.path) {
         try {
           await optimizedFile.delete();
@@ -1256,98 +1723,91 @@ class _OCRHomePageState extends State<OCRHomePage> {
   String _getOCRProcessingMessage(OCRQuality quality) {
     switch (quality) {
       case OCRQuality.fast:
-        return 'Metin çıkarılıyor (Hızlı)...';
+        return context.l10n.extractingFast;
       case OCRQuality.balanced:
-        return 'Metin çıkarılıyor (2 motor)...';
+        return context.l10n.extractingDualEngine;
       case OCRQuality.accurate:
-        return 'Metin çıkarılıyor (Yüksek doğruluk)...';
+        return context.l10n.extractingHighAccuracy;
       case OCRQuality.premium:
-        return 'Metin çıkarılıyor (Premium)...';
+        return context.l10n.extractingPremium;
     }
   }
 
-  String _buildOCRResultMessage(OCRResult result) {
+  String _buildOCRResultMessage(OCRResult result, [AppLocalizations? l10n]) {
+    final localizations = l10n ?? context.l10n;
+    
     if (!result.isSuccess) {
-      return 'OCR işlemi başarısız: ${result.errorMessage ?? "Bilinmeyen hata"}';
+      return '${localizations.error}: ${result.errorMessage}';
     }
     
     if (result.text.isEmpty) {
-      return 'Metin bulunamadı (${result.engine.displayName})';
+      return localizations.noTextFound;
     }
     
-    final processingTime = result.processingTime.inMilliseconds;
     final confidence = (result.confidence * 100).toStringAsFixed(0);
-    
-    return 'Metin başarıyla çıkarıldı! ✨\n'
-           '${result.engine.displayName} • ${processingTime}ms • %$confidence güven';
+    final time = result.processingTime.inMilliseconds;
+    return '${localizations.ocrCompleted} (${result.engine.displayName} • %$confidence • ${time}ms)';
   }
 
   Future<void> _performBatchOCR() async {
-    final List<String> allExtractedTexts = [];
-    final List<File> optimizedFiles = [];
-    final List<OCRResult> batchResults = [];
+    // Provider ve localization'ı async işlemlerden önce al
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final ocrLanguage = OCREngineManager.getOCRLanguageFromLocale(themeProvider.locale);
+    final l10n = context.l10n;
     
-    for (int i = 0; i < _selectedImages.length; i++) {
-      try {
-        // 1. Görüntü iyileştirme
         _updateStatus(
           isProcessing: true,
-          message: 'Resim ${i + 1}/${_selectedImages.length} optimize ediliyor...',
-        );
-        
-        final optimizedFile = await ImageProcessor.optimizeForOCR(
-          _selectedImages[i],
-          level: _enhancementLevel,
-        );
-        optimizedFiles.add(optimizedFile);
-
-        // 2. OCR işlemi - Çoklu motor desteği
-        _updateStatus(
-          isProcessing: true,
-          message: 'Resim ${i + 1}/${_selectedImages.length} ${_getOCRProcessingMessage(_ocrQuality).toLowerCase()}',
-        );
-        
-        final ocrResult = await OCREngineManager.performOCR(
-          optimizedFile,
+        message: '${l10n.optimizingImage} (${_selectedImages.length} resim)...',
+      );
+    
+    try {
+      // Determine optimal concurrent processing count based on device capabilities
+      final maxConcurrent = _calculateOptimalConcurrency();
+      
+      // Optimized parallel batch processing
+      final batchResults = await OptimizedOCRManager.performOptimizedBatchOCR(
+        _selectedImages,
           quality: _ocrQuality,
-          language: 'tur',
+        language: ocrLanguage,
           isHandwritingMode: _isHandwritingMode,
-        );
+        maxConcurrent: maxConcurrent,
+      );
+      
+      // Update progress during processing
+      var processedCount = 0;
+      final List<String> allExtractedTexts = [];
+      
+      for (int i = 0; i < batchResults.length; i++) {
+        final ocrResult = batchResults[i];
+        processedCount++;
         
-        batchResults.add(ocrResult);
+        // Update progress every few items
+        if (processedCount % 2 == 0 || processedCount == batchResults.length) {
+          if (!mounted) return;
+                     _updateStatus(
+             isProcessing: processedCount < batchResults.length,
+             message: 'İşleniyor $processedCount/${_selectedImages.length}...',
+           );
+        }
+        
+        // Add to history
         _ocrHistory.add(ocrResult);
         
-        // Sonuç formatla
+        // Format result
         if (ocrResult.isSuccess && ocrResult.text.isNotEmpty) {
           final confidence = (ocrResult.confidence * 100).toStringAsFixed(0);
           final engine = ocrResult.engine.displayName;
           allExtractedTexts.add(
-            '--- Sayfa ${i + 1} ---\n'
+             '--- ${l10n.pageNumber} ${i + 1} ---\n'
             '[$engine • %$confidence güven]\n\n'
             '${ocrResult.text}'
           );
         } else {
+          final noTextMessage = ocrResult.isSuccess ? l10n.noTextFound : "${l10n.error}: ${ocrResult.errorMessage}";
           allExtractedTexts.add(
-            '--- Sayfa ${i + 1} ---\n'
-            '[${ocrResult.isSuccess ? "Metin bulunamadı" : "Hata: ${ocrResult.errorMessage}"}]'
+            '--- ${l10n.pageNumber} ${i + 1} ---\n'
+            '[$noTextMessage]'
           );
-        }
-        
-        // Kısa bekleme
-        await Future.delayed(const Duration(milliseconds: 300));
-      } catch (e) {
-        allExtractedTexts.add('--- Sayfa ${i + 1} ---\n\n[Hata: Metin çıkarılamadı]');
-      }
-    }
-    
-    // 3. Optimize edilmiş dosyaları temizle
-    for (final optimizedFile in optimizedFiles) {
-      if (!_selectedImages.any((original) => original.path == optimizedFile.path)) {
-        try {
-          await optimizedFile.delete();
-        } catch (e) {
-          // Silme hatası önemli değil
-        }
       }
     }
     
@@ -1355,137 +1815,79 @@ class _OCRHomePageState extends State<OCRHomePage> {
     
     // Batch performans özeti
     final successfulResults = batchResults.where((r) => r.isSuccess && r.text.isNotEmpty).length;
+      
+      String message;
+      if (successfulResults > 0) {
     final avgTime = batchResults.map((r) => r.processingTime.inMilliseconds).reduce((a, b) => a + b) / batchResults.length;
+        message = '${l10n.batchOcrComplete}\n'
+                  '$successfulResults/${_selectedImages.length} ${l10n.success} • ${avgTime.toStringAsFixed(0)}ms ${l10n.average}';
+      } else {
+        message = l10n.noTextFound;
+      }
     
+      if (!mounted) return;
     _updateStatus(
       isProcessing: false,
-      message: 'Toplu OCR tamamlandı! ✨\n'
-               '$successfulResults/${_selectedImages.length} başarılı • ${avgTime.toStringAsFixed(0)}ms ort.',
-      extractedText: combinedText.isEmpty ? 'Hiçbir resimde metin bulunamadı' : combinedText,
-    );
-  }
-
-  void _switchMode(bool isBatchMode) {
-    setState(() {
-      _isBatchMode = isBatchMode;
-      _selectedImage = null; // Clear single image if switching to batch
-      _selectedImages = []; // Clear batch images if switching to single
-      _extractedText = ''; // Clear extracted text
-      _statusMessage = '';
-    });
-  }
-
-
-
-  void _clearBatchImages() {
-    setState(() {
-      _selectedImages = [];
-      _statusMessage = 'Çoklu resimler temizlendi.';
-      _clearStatusAfterDelay(2);
-    });
-  }
-
-  void _removeImageFromBatch(int index) {
-    setState(() {
-      _selectedImages.removeAt(index);
-      _statusMessage = '${_selectedImages.length} resim seçildi.';
-      _clearStatusAfterDelay(2);
-    });
-  }
-
-  void _updateStatus({
-    bool? isProcessing,
-    bool? isPickingImage,
-    String? message,
-    File? selectedImage,
-    String? extractedText,
-  }) {
-    setState(() {
-      if (isProcessing != null) _isProcessing = isProcessing;
-      if (isPickingImage != null) _isPickingImage = isPickingImage;
-      if (message != null) _statusMessage = message;
-      if (selectedImage != null) _selectedImage = selectedImage;
-      if (extractedText != null) _extractedText = extractedText;
-    });
-  }
-
-  void _clearStatusAfterDelay(int seconds) {
-    Future.delayed(Duration(seconds: seconds), () {
-      if (mounted) {
-        setState(() {
-          _statusMessage = '';
-        });
+        message: message,
+        extractedText: combinedText.isEmpty ? l10n.noTextFound : combinedText,
+      );
+        
+      // Success animasyonu göster
+      if (successfulResults > 0) {
+        if (!mounted) return;
+        _showSnackbar(l10n.ocrCompletedSuccess);
       }
-    });
-  }
-
-  void _openTextEditor() {
-    if (_extractedText.isNotEmpty) {
-      Navigator.push(
+    } catch (e) {
+      if (!mounted) return;
+      _updateStatus(
+        isProcessing: false,
+        message: l10n.extractionError,
+        extractedText: l10n.extractionError,
+      );
+      
+      ErrorHandler.handleError(
         context,
-        MaterialPageRoute(
-          builder: (context) => TextEditorScreen(initialText: _extractedText),
-        ),
+        e,
+        customMessage: l10n.extractionError,
+        onRetry: () => _performBatchOCR(),
       );
     }
   }
-
-  void _copyToClipboard() {
-    if (_extractedText.isNotEmpty) {
-      Clipboard.setData(ClipboardData(text: _extractedText));
-      _showSnackBar('Metin panoya kopyalandı', Colors.green);
+  
+  /// Calculate optimal concurrency based on device capabilities
+  int _calculateOptimalConcurrency() {
+    // Conservative approach: limit based on image count and memory
+    final imageCount = _selectedImages.length;
+    
+    if (imageCount <= 3) {
+      return imageCount; // Process all at once for small batches
+    } else if (imageCount <= 10) {
+      return 3; // Moderate concurrency
+    } else {
+      return 2; // Conservative for large batches to prevent memory issues
     }
   }
 
-  void _showSnackBar(String message, Color backgroundColor) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: backgroundColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-    );
-  }
-
   void _showPermissionDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('İzin Gerekli'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tamam'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              openAppSettings();
-            },
-            child: const Text('Ayarlara Git'),
-          ),
-        ],
-      ),
+    // Enhanced error handling kullan
+    ErrorHandler.handleError(
+        context,
+      'permission: $message',
+      customMessage: message,
+      showSnackBar: false, // Dialog göstereceğimiz için snackbar'ı kapatıyoruz
     );
   }
 
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Hata'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tamam'),
-          ),
-        ],
-      ),
-    );
+  /// Calculate SHA256 hash of image file for caching and deduplication
+  Future<String> _calculateImageHash(File imageFile) async {
+    try {
+      final bytes = await imageFile.readAsBytes();
+      final digest = sha256.convert(bytes);
+      return digest.toString();
+    } catch (e) {
+      return DateTime.now().millisecondsSinceEpoch.toString();
+    }
   }
+
+
 }

@@ -15,5 +15,6 @@
     "**/android/build": true,
     "**/ios/build": true
   },
-  "java.configuration.updateBuildConfiguration": "interactive"
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "cmake.ignoreCMakeListsMissing": true
 } 
