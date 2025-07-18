@@ -49,7 +49,7 @@ class AppLocalizations {
   String get balanced => _localizedStrings[locale.languageCode]!['balanced']!;
   String get accurate => _localizedStrings[locale.languageCode]!['accurate']!;
   String get premium => _localizedStrings[locale.languageCode]!['premium']!;
-  
+
   // OCR Quality Subtitles
   String get mlKit => _localizedStrings[locale.languageCode]!['ml_kit']!;
   String get dualEngine => _localizedStrings[locale.languageCode]!['dual_engine']!;
@@ -495,7 +495,7 @@ class AppLocalizations {
       'restart_device': '• Cihazınızı yeniden başlatın',
       'check_app_updates': '• Uygulama güncellemelerini kontrol edin',
       'contact_developer': '• Geliştirici ile iletişime geçin',
-
+      
       // Performance & Statistics
       'performance_statistics': 'Performans İstatistikleri',
       'clear_data': 'Verileri Temizle', 
@@ -659,7 +659,7 @@ class AppLocalizations {
       'restart_device': '• Restart your device',
       'check_app_updates': '• Check for app updates',
       'contact_developer': '• Contact the developer',
-
+      
       // Credits
       'credit_info': 'Credit Information',
       'current_credits': 'Current Credits',

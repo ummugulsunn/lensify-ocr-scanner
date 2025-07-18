@@ -553,16 +553,16 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
     setState(() => _isExporting = true);
 
     try {
-      final pdf = pw.Document();
+    final pdf = pw.Document();
       final fontData = await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final ttf = pw.Font.ttf(fontData);
-
-      pdf.addPage(
+    
+    pdf.addPage(
         pw.MultiPage(
           pageFormat: _pageFormat,
           header: _includeDateHeader ? (pw.Context context) {
             return pw.Container(
-              alignment: pw.Alignment.centerRight,
+            alignment: pw.Alignment.centerRight,
               margin: const pw.EdgeInsets.only(bottom: 3.0 * PdfPageFormat.mm),
               padding: const pw.EdgeInsets.only(bottom: 3.0 * PdfPageFormat.mm),
               decoration: const pw.BoxDecoration(
@@ -578,25 +578,25 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
             return pw.Container(
               alignment: pw.Alignment.centerRight,
               margin: const pw.EdgeInsets.only(top: 1.0 * PdfPageFormat.cm),
-              child: pw.Text(
+                    child: pw.Text(
                 'Page ${context.pageNumber} of ${context.pagesCount}',
                 style: pw.Theme.of(context).header4.copyWith(font: ttf, color: PdfColors.grey),
-              ),
-            );
+                    ),
+                  );
           } : null,
           build: (pw.Context context) => [
             pw.Paragraph(
               text: _textController.text,
               style: pw.TextStyle(font: ttf, fontSize: _fontSize),
-            ),
+      ),
           ],
         ),
       );
-
+      
       final output = await getTemporaryDirectory();
       final file = File("${output.path}/$_documentTitle.pdf");
-      await file.writeAsBytes(await pdf.save());
-
+    await file.writeAsBytes(await pdf.save());
+      
       await Share.shareXFiles([XFile(file.path)], text: 'PDF Document');
     } catch (e) {
       // Handle exceptions

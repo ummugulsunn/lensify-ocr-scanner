@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Theme Widget Colors -->
+    <color name="widget_text_color">#E1F5FE</color>
+    <color name="widget_button_color">#1976D2</color>
+    <color name="widget_button_pressed">#0D47A1</color>
+    <color name="widget_background_start">#263238</color>
+    <color name="widget_background_end">#37474F</color>
+</resources> 

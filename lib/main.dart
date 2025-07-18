@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
 import 'dart:io';
 import 'text_editor_screen.dart';
 import 'utils/image_processor.dart';
@@ -21,6 +22,7 @@ import 'utils/memory_manager.dart';
 import 'database/ocr_history_database.dart';
 import 'services/admob_service.dart';
 import 'services/subscription_manager.dart';
+import 'services/widget_service.dart';
 import 'widgets/banner_ad_widget.dart';
 
 import 'dart:developer' as developer;
@@ -45,6 +47,9 @@ void main() async {
   // Initialize Subscription Manager
   await SubscriptionManager.instance.initialize();
   await SubscriptionManager.instance.loadSubscriptionStatus();
+  
+  // Initialize Widget Service
+  await WidgetService.instance.initialize();
   
   // Initialize OCR History Database
   try {
@@ -123,6 +128,9 @@ class _OCRHomePageState extends State<OCRHomePage> {
 
   // Kredi sistemi için
   int _currentCredits = 0;
+  
+  // Widget service listener
+  StreamSubscription<WidgetAction>? _widgetActionSubscription;
 
 
   
@@ -130,13 +138,42 @@ class _OCRHomePageState extends State<OCRHomePage> {
   void initState() {
     super.initState();
     _loadCreditInfo();
+    _setupWidgetListener();
   }
   
   @override
   void dispose() {
     // Cleanup memory resources
     MemoryManager.dispose();
+    _widgetActionSubscription?.cancel();
     super.dispose();
+  }
+  
+  /// Setup widget action listener
+  void _setupWidgetListener() {
+    _widgetActionSubscription = WidgetService.instance.actionStream.listen((action) {
+      _handleWidgetAction(action);
+    });
+  }
+  
+  /// Handle widget actions
+  void _handleWidgetAction(WidgetAction action) {
+    switch (action.type) {
+      case WidgetActionType.camera:
+        _pickImage(ImageSource.camera);
+        break;
+      case WidgetActionType.gallery:
+        _pickImage(ImageSource.gallery);
+        break;
+      case WidgetActionType.history:
+        Navigator.pushNamed(context, '/history');
+        break;
+      case WidgetActionType.settings:
+        _showSettingsDialog();
+        break;
+      case WidgetActionType.unknown:
+        break;
+    }
   }
   
   Future<void> _loadCreditInfo() async {
@@ -223,7 +260,7 @@ class _OCRHomePageState extends State<OCRHomePage> {
                     const SizedBox(height: 20),
                     BannerAdWidget(
                       onUpgradePressed: () => _showInsufficientCreditsDialog(),
-                    ),
+                      ),
               ],
             ),
           ),

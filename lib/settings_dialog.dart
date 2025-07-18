@@ -1085,7 +1085,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
         _buildRestorePurchasesButton(isDark),
       ],
     );
-  }
+    }
 
   Widget _buildSubscriptionOption({
     required bool isDark,
