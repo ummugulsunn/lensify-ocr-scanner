@@ -1169,7 +1169,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
   }
 
   Widget _buildRestorePurchasesButton(bool isDark) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: CupertinoButton(
         onPressed: _restorePurchases,
