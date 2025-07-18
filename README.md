@@ -1,10 +1,11 @@
-# Lensify: OCR Scanner & PDF
+# 📱 Lensify OCR Scanner & PDF Generator
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/your-username/lensify)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/ummugulsunt/Lensify_OCR_Scanner)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/ummugulsunt/Lensify_OCR_Scanner)
+[![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS-success)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20Android-blue)](https://flutter.dev)
 
-A smart, fast, and private OCR scanner that turns any image into editable text, PDF, and Word documents right on your device.
+🚀 **Production Ready** - A powerful OCR scanner that transforms images into editable text and PDF documents with multi-language support, advanced AI recognition, and monetization features.
 
 ## About The Project
 
@@ -54,7 +55,7 @@ Lensify addresses the common and tedious problem of manually typing text from im
 
 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/lensify.git
+git clone https://github.com/ummugulsunt/lensify.git
 cd lensify
 ```
 
@@ -119,8 +120,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Ümmügülsün Türkmen**  
 📧 Email: ummugulsum1881@gmail.com  
-🔗 LinkedIn: [Your LinkedIn Profile](https://linkedin.com/in/your-profile)  
-🐙 GitHub: [Your GitHub Profile](https://github.com/your-username)
+🔗 LinkedIn: [ümümügülsün türkmen](https://linkedin.com/in/ummugulsunturkmen)  
+🐙 GitHub: [Ümmügülsün Türkmen](https://github.com/ummugulsunt)
 
 ## Acknowledgments
 

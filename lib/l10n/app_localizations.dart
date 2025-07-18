@@ -49,6 +49,12 @@ class AppLocalizations {
   String get balanced => _localizedStrings[locale.languageCode]!['balanced']!;
   String get accurate => _localizedStrings[locale.languageCode]!['accurate']!;
   String get premium => _localizedStrings[locale.languageCode]!['premium']!;
+  
+  // OCR Quality Subtitles
+  String get mlKit => _localizedStrings[locale.languageCode]!['ml_kit']!;
+  String get dualEngine => _localizedStrings[locale.languageCode]!['dual_engine']!;
+  String get allEngines => _localizedStrings[locale.languageCode]!['all_engines']!;
+  String get cloud => _localizedStrings[locale.languageCode]!['cloud']!;
 
   // Handwriting Mode
   String get handwritingMode => _localizedStrings[locale.languageCode]!['handwriting_mode']!;
@@ -84,9 +90,11 @@ class AppLocalizations {
   String get copyText => _localizedStrings[locale.languageCode]!['copy_text']!;
   String get shareText => _localizedStrings[locale.languageCode]!['share_text']!;
   String get exportPdf => _localizedStrings[locale.languageCode]!['export_pdf']!;
+  String get getPdf => _localizedStrings[locale.languageCode]!['get_pdf']!;
   String get exportWord => _localizedStrings[locale.languageCode]!['export_word']!;
   String get save => _localizedStrings[locale.languageCode]!['save']!;
   String get textCopied => _localizedStrings[locale.languageCode]!['text_copied']!;
+  String get ocrScanResult => _localizedStrings[locale.languageCode]!['ocr_scan_result']!;
 
   // Messages & Errors
   String get success => _localizedStrings[locale.languageCode]!['success']!;
@@ -132,6 +140,21 @@ class AppLocalizations {
   String get textCopiedToClipboard => _localizedStrings[locale.languageCode]!['text_copied_to_clipboard']!;
   String get ocrCompletedSuccess => _localizedStrings[locale.languageCode]!['ocr_completed_success']!;
   String get selectImageInstruction => _localizedStrings[locale.languageCode]!['select_image_instruction']!;
+  String get settingsSubtitle => _localizedStrings[locale.languageCode]!['settings_subtitle']!;
+  String get lightThemeSubtitle => _localizedStrings[locale.languageCode]!['light_theme_subtitle']!;
+  String get darkThemeSubtitle => _localizedStrings[locale.languageCode]!['dark_theme_subtitle']!;
+  String get systemThemeSubtitle => _localizedStrings[locale.languageCode]!['system_theme_subtitle']!;
+  String get ocrHistoryTitle => _localizedStrings[locale.languageCode]!['ocr_history_title']!;
+  String get viewOcrHistory => _localizedStrings[locale.languageCode]!['view_ocr_history']!;
+  String get viewOcrHistorySubtitle => _localizedStrings[locale.languageCode]!['view_ocr_history_subtitle']!;
+  String get totalOperationsLabel => _localizedStrings[locale.languageCode]!['total_operations_label']!;
+  String get successRateLabel => _localizedStrings[locale.languageCode]!['success_rate_label']!;
+  String get averageTimeLabel => _localizedStrings[locale.languageCode]!['average_time_label']!;
+  String get detailedReportButton => _localizedStrings[locale.languageCode]!['detailed_report_button']!;
+  String get enginePerformanceValue => _localizedStrings[locale.languageCode]!['engine_performance_value']!;
+  String get buy50Credits => _localizedStrings[locale.languageCode]!['buy_50_credits']!;
+  String get buy100Credits => _localizedStrings[locale.languageCode]!['buy_100_credits']!;
+  String get buy250Credits => _localizedStrings[locale.languageCode]!['buy_250_credits']!;
   String get galleryError => _localizedStrings[locale.languageCode]!['gallery_error']!;
   String get galleryErrorRetry => _localizedStrings[locale.languageCode]!['gallery_error_retry']!;
   String get cameraPermissionRequired => _localizedStrings[locale.languageCode]!['camera_permission_required']!;
@@ -144,9 +167,58 @@ class AppLocalizations {
   String get pageNumber => _localizedStrings[locale.languageCode]!['page_number']!;
   String get extractionError => _localizedStrings[locale.languageCode]!['extraction_error']!;
   String get wordExportUnavailable => _localizedStrings[locale.languageCode]!['word_export_unavailable']!;
+  String get pdfCreationError => _localizedStrings[locale.languageCode]!['pdf_creation_error']!;
   String get performanceDataWarning => _localizedStrings[locale.languageCode]!['performance_data_warning']!;
   String get selectCreditPackage => _localizedStrings[locale.languageCode]!['select_credit_package']!;
   String get creditsAddedSuccess => _localizedStrings[locale.languageCode]!['credits_added_success']!;
+
+  // New translations for OCR History Screen
+  String get deleteConfirmation => _localizedStrings[locale.languageCode]!['delete_confirmation']!;
+  String get deleteConfirmationMessage => _localizedStrings[locale.languageCode]!['delete_confirmation_message']!;
+  String get delete => _localizedStrings[locale.languageCode]!['delete']!;
+  String get ocrHistory => _localizedStrings[locale.languageCode]!['ocr_history']!;
+  String get sortByDateDesc => _localizedStrings[locale.languageCode]!['sort_by_date_desc']!;
+  String get sortByDateAsc => _localizedStrings[locale.languageCode]!['sort_by_date_asc']!;
+  String get sortByConfidenceDesc => _localizedStrings[locale.languageCode]!['sort_by_confidence_desc']!;
+  String get sortByConfidenceAsc => _localizedStrings[locale.languageCode]!['sort_by_confidence_asc']!;
+  String get edit => _localizedStrings[locale.languageCode]!['edit']!;
+  String get items => _localizedStrings[locale.languageCode]!['items']!;
+  String get search => _localizedStrings[locale.languageCode]!['search']!;
+  String get apply => _localizedStrings[locale.languageCode]!['apply']!;
+  String get filter => _localizedStrings[locale.languageCode]!['filter']!;
+  String get all => _localizedStrings[locale.languageCode]!['all']!;
+  String get favoritesOnly => _localizedStrings[locale.languageCode]!['favorites_only']!;
+  String get archivedOnly => _localizedStrings[locale.languageCode]!['archived_only']!;
+
+  // New translations for Text Editor Screen
+  String get pdfSettings => _localizedStrings[locale.languageCode]!['pdf_settings']!;
+  String get fontSize => _localizedStrings[locale.languageCode]!['font_size']!;
+  String get dateHeader => _localizedStrings[locale.languageCode]!['date_header']!;
+  String get pageNumbers => _localizedStrings[locale.languageCode]!['page_numbers']!;
+  String get createPdf => _localizedStrings[locale.languageCode]!['create_pdf']!;
+  String get documentTitle => _localizedStrings[locale.languageCode]!['document_title']!;
+  String get pageFormat => _localizedStrings[locale.languageCode]!['page_format']!;
+  String get a4 => _localizedStrings[locale.languageCode]!['a4']!;
+  String get a5 => _localizedStrings[locale.languageCode]!['a5']!;
+  String get letter => _localizedStrings[locale.languageCode]!['letter']!;
+
+  // New Translations for Error Handler
+  String get connectionTips => _localizedStrings[locale.languageCode]!['connection_tips']!;
+  String get checkWifi => _localizedStrings[locale.languageCode]!['check_wifi']!;
+  String get enableMobileData => _localizedStrings[locale.languageCode]!['enable_mobile_data']!;
+  String get disableAirplaneMode => _localizedStrings[locale.languageCode]!['disable_airplane_mode']!;
+  String get restartRouter => _localizedStrings[locale.languageCode]!['restart_router']!;
+  String get storageTips => _localizedStrings[locale.languageCode]!['storage_tips']!;
+  String get deleteUnnecessaryPhotos => _localizedStrings[locale.languageCode]!['delete_unnecessary_photos']!;
+  String get clearCache => _localizedStrings[locale.languageCode]!['clear_cache']!;
+  String get uninstallUnusedApps => _localizedStrings[locale.languageCode]!['uninstall_unused_apps']!;
+  String get moveFilesToCloud => _localizedStrings[locale.languageCode]!['move_files_to_cloud']!;
+  String get support => _localizedStrings[locale.languageCode]!['support']!;
+  String get ifProblemPersists => _localizedStrings[locale.languageCode]!['if_problem_persists']!;
+  String get restartApp => _localizedStrings[locale.languageCode]!['restart_app']!;
+  String get restartDevice => _localizedStrings[locale.languageCode]!['restart_device']!;
+  String get checkAppUpdates => _localizedStrings[locale.languageCode]!['check_app_updates']!;
+  String get contactDeveloper => _localizedStrings[locale.languageCode]!['contact_developer']!;
 
   // Performance & Statistics
   String get performanceStatistics => _localizedStrings[locale.languageCode]!['performance_statistics']!;
@@ -163,9 +235,37 @@ class AppLocalizations {
   String get clear => _localizedStrings[locale.languageCode]!['clear']!;
   String get imageOptimizing => _localizedStrings[locale.languageCode]!['image_optimizing']!;
   String get average => _localizedStrings[locale.languageCode]!['average']!;
+  String get searchHint => _localizedStrings[locale.languageCode]!['search_hint']!;
+  String get category => _localizedStrings[locale.languageCode]!['category']!;
+  String get minutesAgo => _localizedStrings[locale.languageCode]!['minutes_ago']!;
+  String get yesterday => _localizedStrings[locale.languageCode]!['yesterday']!;
+  String get daysAgo => _localizedStrings[locale.languageCode]!['days_ago']!;
+  String get recordDeleted => _localizedStrings[locale.languageCode]!['record_deleted']!;
+  String get recordDeletionFailed => _localizedStrings[locale.languageCode]!['record_deletion_failed']!;
+  String get history => _localizedStrings[locale.languageCode]!['history']!;
+  String get categories => _localizedStrings[locale.languageCode]!['categories']!;
+  String get statistics => _localizedStrings[locale.languageCode]!['statistics']!;
+  String get searchNoResults => _localizedStrings[locale.languageCode]!['search_no_results']!;
+  String get noHistory => _localizedStrings[locale.languageCode]!['no_history']!;
+  String get searchNoResultsForQuery => _localizedStrings[locale.languageCode]!['search_no_results_for_query']!;
+  String get uncategorized => _localizedStrings[locale.languageCode]!['uncategorized']!;
+  String get images => _localizedStrings[locale.languageCode]!['images']!;
+  String get generalStatistics => _localizedStrings[locale.languageCode]!['general_statistics']!;
+  String get totalRecords => _localizedStrings[locale.languageCode]!['total_records']!;
+  String get favorites => _localizedStrings[locale.languageCode]!['favorites']!;
+  String get archived => _localizedStrings[locale.languageCode]!['archived']!;
+  String get averageConfidence => _localizedStrings[locale.languageCode]!['average_confidence']!;
+  String get averageProcessingTime => _localizedStrings[locale.languageCode]!['average_processing_time']!;
+  String get engineUsage => _localizedStrings[locale.languageCode]!['engine_usage']!;
+  String get languageDistribution => _localizedStrings[locale.languageCode]!['language_distribution']!;
+
+  // AdMob & Pro Upgrade
+  String get removeAds => _localizedStrings[locale.languageCode]!['remove_ads']!;
+  String get adFree => _localizedStrings[locale.languageCode]!['ad_free']!;
+  String get upgradeToPro => _localizedStrings[locale.languageCode]!['upgrade_to_pro']!;
 
   // Çeviriler
-  static const Map<String, Map<String, String>> _localizedStrings = {
+  static final Map<String, Map<String, String>> _localizedStrings = {
     'tr': {
       // App Title & Branding
       'app_title': 'Lensify',
@@ -206,13 +306,37 @@ class AppLocalizations {
       
       // Settings
       'settings': 'Ayarlar',
+      'settings_subtitle': 'Uygulamayı kişiselleştirin',
       'theme': 'Tema',
       'light_theme': 'Açık Tema',
+      'light_theme_subtitle': 'Aydınlık görünüm',
       'dark_theme': 'Koyu Tema',
+      'dark_theme_subtitle': 'Karanlık görünüm',
       'system_theme': 'Sistem',
+      'system_theme_subtitle': 'Sistem ayarını takip et',
       'language': 'Dil',
       'turkish': 'Türkçe',
       'english': 'İngilizce',
+      'ocr_history_title': 'OCR Geçmişi',
+      'view_ocr_history': 'Geçmiş OCR İşlemlerini Görüntüle',
+      'view_ocr_history_subtitle': 'Tüm tarama geçmişinizi ve sonuçlarını görün',
+      'total_operations_label': 'Toplam İşlem',
+      'success_rate_label': 'Başarı Oranı',
+      'average_time_label': 'Ortalama Süre',
+      'detailed_report_button': 'Detaylı Rapor',
+      'engine_performance_value': '{count} işlem ({rate}%)',
+      'buy_50_credits': '50 kredi - ₺9.99',
+      'buy_100_credits': '100 kredi - ₺19.99',
+      'buy_250_credits': '250 kredi - ₺39.99',
+      
+      // OCR Quality Subtitles
+      'ml_kit': 'ML Kit',
+      'dual_engine': '2 Motor',
+      'all_engines': 'Tüm Motor',
+      'cloud': 'Cloud',
+      
+      // Document Title
+      'ocr_scan_result': 'OCR Tarama Sonucu',
       
       // Credits
       'credit_info': 'Kredi Bilgileri',
@@ -234,6 +358,7 @@ class AppLocalizations {
       'copy_text': 'Metni Kopyala',
       'share_text': 'Metni Paylaş',
       'export_pdf': 'PDF Olarak Kaydet',
+      'get_pdf': 'PDF Al',
       'export_word': 'Word Olarak Kaydet',
       'save': 'Kaydet',
       'text_copied': 'Metin kopyalandı',
@@ -294,10 +419,83 @@ class AppLocalizations {
       'page_number': 'Sayfa',
       'extraction_error': 'Hata: Metin çıkarılamadı',
       'word_export_unavailable': 'Word export henüz mevcut değil.',
+      'pdf_creation_error': 'PDF oluşturma hatası',
       'performance_data_warning': 'Tüm performans verileri silinecek. Bu işlem geri alınamaz.',
       'select_credit_package': 'Kredi paketlerini seçin',
       'credits_added_success': 'kredi başarıyla eklendi!',
       
+      // OCR History
+      'delete_confirmation': 'Silme Onayı',
+      'delete_confirmation_message': 'Bu OCR kaydını silmek istediğinizden emin misiniz?',
+      'delete': 'Sil',
+      'ocr_history': 'OCR Geçmişi',
+      'sort_by_date_desc': 'En Yeni',
+      'sort_by_date_asc': 'En Eski',
+      'sort_by_confidence_desc': 'Yüksek Güven',
+      'sort_by_confidence_asc': 'Düşük Güven',
+      'edit': 'Düzenle',
+      'items': 'öğe',
+      'search': 'Arama',
+      'apply': 'Uygula',
+      'filter': 'Filtrele',
+      'all': 'Tümü',
+      'favorites_only': 'Sadece Favoriler',
+      'archived_only': 'Sadece Arşivlenenler',
+
+      // Text Editor
+      'pdf_settings': 'PDF Ayarları',
+      'font_size': 'Yazı Boyutu',
+      'date_header': 'Tarih Başlığı',
+      'page_numbers': 'Sayfa Numaraları',
+      'create_pdf': 'PDF Oluştur',
+      'document_title': 'Belge Başlığı',
+      'page_format': 'Sayfa Formatı',
+      'a4': 'A4',
+      'a5': 'A5',
+      'letter': 'Letter',
+      'record_deleted': 'Kayıt silindi',
+      'record_deletion_failed': 'Kayıt silinemedi',
+      'history': 'Geçmiş',
+      'categories': 'Kategoriler',
+      'statistics': 'İstatistikler',
+      'search_no_results': 'Arama sonucu bulunamadı',
+      'no_history': 'Henüz OCR geçmişi yok',
+      'search_no_results_for_query': 'için sonuç bulunamadı',
+      'uncategorized': 'Kategorisiz',
+      'images': 'resim',
+      'general_statistics': 'Genel İstatistikler',
+      'total_records': 'Toplam Kayıt',
+      'favorites': 'Favoriler',
+      'archived': 'Arşivlenenler',
+      'average_confidence': 'Ortalama Güven',
+      'average_processing_time': 'Ortalama Süre',
+      'engine_usage': 'Motor Kullanımı',
+      'language_distribution': 'Dil Dağılımı',
+      'search_hint': 'Metin içinde ara...',
+      'category': 'Kategori',
+      'yesterday': 'Dün',
+      'days_ago': 'gün önce',
+      'minutes_ago': 'dakika önce',
+
+
+      // Error Handler
+      'connection_tips': 'Bağlantı İpuçları',
+      'check_wifi': '• Wi-Fi bağlantınızı kontrol edin',
+      'enable_mobile_data': '• Mobil verilerinizi açın',
+      'disable_airplane_mode': '• Uçak modunu kapatın',
+      'restart_router': '• Router\'ınızı yeniden başlatın',
+      'storage_tips': 'Depolama İpuçları',
+      'delete_unnecessary_photos': '• Gereksiz fotoğrafları silin',
+      'clear_cache': '• Önbelleği temizleyin',
+      'uninstall_unused_apps': '• Kullanmadığınız uygulamaları kaldırın',
+      'move_files_to_cloud': '• Dosyaları bulut depolamaya taşıyın',
+      'support': 'Destek',
+      'if_problem_persists': 'Sorun devam ederse:',
+      'restart_app': '• Uygulamayı yeniden başlatın',
+      'restart_device': '• Cihazınızı yeniden başlatın',
+      'check_app_updates': '• Uygulama güncellemelerini kontrol edin',
+      'contact_developer': '• Geliştirici ile iletişime geçin',
+
       // Performance & Statistics
       'performance_statistics': 'Performans İstatistikleri',
       'clear_data': 'Verileri Temizle', 
@@ -313,6 +511,11 @@ class AppLocalizations {
       'clear': 'Temizle',
       'image_optimizing': 'Görüntü iyileştiriliyor...',
       'average': 'ort.',
+      
+      // AdMob & Pro Upgrade
+      'remove_ads': 'Reklamları Kaldır',
+      'ad_free': 'Reklamsız',
+      'upgrade_to_pro': 'Pro\'ya Yükselt',
     },
     'en': {
       // App Title & Branding
@@ -354,14 +557,109 @@ class AppLocalizations {
       
       // Settings
       'settings': 'Settings',
+      'settings_subtitle': 'Customize the application',
       'theme': 'Theme',
       'light_theme': 'Light Theme',
+      'light_theme_subtitle': 'Light appearance',
       'dark_theme': 'Dark Theme',
+      'dark_theme_subtitle': 'Dark appearance',
       'system_theme': 'System',
+      'system_theme_subtitle': 'Follow system setting',
       'language': 'Language',
       'turkish': 'Turkish',
       'english': 'English',
+      'ocr_history_title': 'OCR History',
+      'view_ocr_history': 'View Past OCR Operations',
+      'view_ocr_history_subtitle': 'See all your scan history and results',
+      'total_operations_label': 'Total Operations',
+      'success_rate_label': 'Success Rate',
+      'average_time_label': 'Average Time',
+      'detailed_report_button': 'Detailed Report',
+      'engine_performance_value': '{count} operations ({rate}%)',
+      'buy_50_credits': '50 credits - \$0.99',
+      'buy_100_credits': '100 credits - \$1.99',
+      'buy_250_credits': '250 credits - \$3.99',
       
+      // OCR Quality Subtitles
+      'ml_kit': 'ML Kit',
+      'dual_engine': 'Dual Engine',
+      'all_engines': 'All Engines',
+      'cloud': 'Cloud',
+      
+      // Document Title
+      'ocr_scan_result': 'OCR Scan Result',
+      
+      // OCR History
+      'delete_confirmation': 'Delete Confirmation',
+      'delete_confirmation_message': 'Are you sure you want to delete this OCR record?',
+      'delete': 'Delete',
+      'ocr_history': 'OCR History',
+      'sort_by_date_desc': 'Newest',
+      'sort_by_date_asc': 'Oldest',
+      'sort_by_confidence_desc': 'High Confidence',
+      'sort_by_confidence_asc': 'Low Confidence',
+      'edit': 'Edit',
+      'items': 'items',
+      'search': 'Search',
+      'apply': 'Apply',
+      'filter': 'Filter',
+      'all': 'All',
+      'favorites_only': 'Favorites Only',
+      'archived_only': 'Archived Only',
+
+      // Text Editor
+      'pdf_settings': 'PDF Settings',
+      'font_size': 'Font Size',
+      'date_header': 'Date Header',
+      'page_numbers': 'Page Numbers',
+      'create_pdf': 'Create PDF',
+      'document_title': 'Document Title',
+      'page_format': 'Page Format',
+      'a4': 'A4',
+      'a5': 'A5',
+      'letter': 'Letter',
+      'record_deleted': 'Record deleted',
+      'record_deletion_failed': 'Failed to delete record',
+      'history': 'History',
+      'categories': 'Categories',
+      'statistics': 'Statistics',
+      'search_no_results': 'No search results found',
+      'no_history': 'No OCR history yet',
+      'search_no_results_for_query': 'No results found for',
+      'uncategorized': 'Uncategorized',
+      'images': 'images',
+      'general_statistics': 'General Statistics',
+      'total_records': 'Total Records',
+      'favorites': 'Favorites',
+      'archived': 'Archived',
+      'average_confidence': 'Average Confidence',
+      'average_processing_time': 'Average Processing Time',
+      'engine_usage': 'Engine Usage',
+      'language_distribution': 'Language Distribution',
+      'search_hint': 'Search within text...',
+      'category': 'Category',
+      'yesterday': 'Yesterday',
+      'days_ago': 'days ago',
+      'minutes_ago': 'minutes ago',
+
+      // Error Handler
+      'connection_tips': 'Connection Tips',
+      'check_wifi': '• Check your Wi-Fi connection',
+      'enable_mobile_data': '• Turn on your mobile data',
+      'disable_airplane_mode': '• Turn off airplane mode',
+      'restart_router': '• Restart your router',
+      'storage_tips': 'Storage Tips',
+      'delete_unnecessary_photos': '• Delete unnecessary photos',
+      'clear_cache': '• Clear the cache',
+      'uninstall_unused_apps': '• Uninstall unused apps',
+      'move_files_to_cloud': '• Move files to cloud storage',
+      'support': 'Support',
+      'if_problem_persists': 'If the problem persists:',
+      'restart_app': '• Restart the app',
+      'restart_device': '• Restart your device',
+      'check_app_updates': '• Check for app updates',
+      'contact_developer': '• Contact the developer',
+
       // Credits
       'credit_info': 'Credit Information',
       'current_credits': 'Current Credits',
@@ -382,6 +680,7 @@ class AppLocalizations {
       'copy_text': 'Copy Text',
       'share_text': 'Share Text',
       'export_pdf': 'Export as PDF',
+      'get_pdf': 'Get PDF',
       'export_word': 'Export as Word',
       'save': 'Save',
       'text_copied': 'Text copied',
@@ -442,6 +741,7 @@ class AppLocalizations {
       'page_number': 'Page',
       'extraction_error': 'Error: Text extraction failed',
       'word_export_unavailable': 'Word export is not available yet.',
+      'pdf_creation_error': 'PDF creation error',
       'performance_data_warning': 'All performance data will be deleted. This action cannot be undone.',
       'select_credit_package': 'Select credit packages',
       'credits_added_success': 'credits successfully added!',
@@ -461,6 +761,11 @@ class AppLocalizations {
       'clear': 'Clear',
       'image_optimizing': 'Optimizing image...',
       'average': 'avg.',
+      
+      // AdMob & Pro Upgrade
+      'remove_ads': 'Remove Ads',
+      'ad_free': 'Ad-Free',
+      'upgrade_to_pro': 'Upgrade to Pro',
     },
   };
 }
@@ -492,4 +797,4 @@ extension AppLocalizationsExtension on BuildContext {
     }
     return localizations;
   }
-} 
+}

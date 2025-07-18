@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:flutter_tesseract_ocr/flutter_tesseract_ocr.dart';
@@ -7,8 +6,6 @@ import 'ocr_engine_manager.dart';
 
 /// Async OCR processor using Dart Isolates for non-blocking operations
 class AsyncOCRProcessor {
-  static const String _logTag = 'AsyncOCRProcessor';
-  
   /// Perform OCR in a separate isolate to avoid blocking the main thread
   static Future<OCRResult> performOCRAsync(OCRRequest request) async {
     try {
@@ -276,4 +273,4 @@ class OptimizedOCRManager {
         return OCREngine.googleMLKit; // Premium features will be added later
     }
   }
-} 
+}

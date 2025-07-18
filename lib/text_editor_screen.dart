@@ -7,15 +7,18 @@ import 'package:share_plus/share_plus.dart';
 import 'dart:io';
 import 'l10n/app_localizations.dart';
 import 'utils/text_format_analyzer.dart';
+import 'widgets/banner_ad_widget.dart';
 
 class TextEditorScreen extends StatefulWidget {
   final String initialText;
   final AppLocalizations l10n;
+  final bool autoGeneratePDF;
 
   const TextEditorScreen({
     super.key, 
     required this.initialText,
     required this.l10n,
+    this.autoGeneratePDF = false,
   });
 
   @override
@@ -32,7 +35,6 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
   
   // PDF Formatting Options
   double _fontSize = 12.0;
-  final String _fontFamily = 'Helvetica';
   bool _includeDateHeader = true;
   bool _includePageNumbers = true;
   PdfPageFormat _pageFormat = PdfPageFormat.a4;
@@ -53,9 +55,16 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
     super.initState();
     _textController = TextEditingController(text: widget.initialText);
     _textController.addListener(_onTextChanged);
-    _titleController = TextEditingController(text: 'OCR Tarama Sonucu');
-    _documentTitle = 'OCR Tarama Sonucu';
+    _titleController = TextEditingController(text: widget.l10n.ocrScanResult);
+    _documentTitle = widget.l10n.ocrScanResult;
     _analyzeText();
+    
+    // Auto-generate PDF if requested
+    if (widget.autoGeneratePDF) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _exportToPdf();
+      });
+    }
   }
 
   @override
@@ -124,6 +133,10 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                 padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
                 child: _buildActionButtons(),
               ),
+              // Banner reklam alanı
+              const BannerAdWidget(
+                showUpgradeButton: false, // Action button'lar zaten var
+              ),
             ],
           ),
         ),
@@ -159,7 +172,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                   IconButton(
                     onPressed: () => setState(() => _editMode = true),
                     icon: const Icon(Icons.edit, color: Colors.white),
-                    tooltip: 'Düzenle',
+                    tooltip: widget.l10n.edit,
                   ),
                 if (_editMode && !_isExporting)
                   IconButton(
@@ -245,7 +258,6 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                               ),
                             );
                           case TextLineType.paragraph:
-                          default:
                             return TextSpan(
                               text: '${line.text}\n',
                               style: const TextStyle(
@@ -253,7 +265,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                                 color: Colors.black87,
       ),
     );
-  }
+                        }
                       }).toList(),
                     ),
                   ),
@@ -380,14 +392,14 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
         children: [
           _buildActionButton(
             icon: Icons.copy,
-              label: 'Kopyala',
+                                  label: widget.l10n.copyText,
             onTap: _copyToClipboard,
               color: Colors.blue,
           ),
           const SizedBox(width: 8),
           _buildActionButton(
             icon: Icons.share,
-            label: 'Paylaş',
+                                label: widget.l10n.shareText,
             onTap: _shareText,
             color: Colors.orange,
           ),
@@ -455,81 +467,66 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
 
   void _shareText() {
     if (_textController.text.isEmpty) return;
-    SharePlus.instance.share(ShareParams(text: _textController.text));
-  }
-
-  Future<void> _exportAsPdf() async {
-    // Show PDF settings dialog first
-    await _showPdfSettingsDialog();
+    Share.share(_textController.text);
   }
 
   Future<void> _showPdfSettingsDialog() async {
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('PDF ${widget.l10n.settings}'),
+        title: Text(widget.l10n.pdfSettings),
         content: StatefulBuilder(
           builder: (context, setState) => SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Document Title
                 TextField(
                   controller: _titleController,
                   decoration: InputDecoration(
-                    labelText: 'Belge Başlığı',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    labelText: widget.l10n.documentTitle,
+                    border: const OutlineInputBorder(),
                   ),
                   onChanged: (value) => _documentTitle = value,
                 ),
-                const SizedBox(height: 16),
-                
-                // Font Size
+                const SizedBox(height: 20),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Yazı Boyutu: ${_fontSize.round()}'),
+                    Text('${widget.l10n.fontSize}: ${_fontSize.round()}'),
                     Expanded(
                       child: Slider(
                         value: _fontSize,
-                        min: 8.0,
-                        max: 24.0,
-                        divisions: 16,
+                        min: 8,
+                        max: 24,
+                        divisions: 8,
+                        label: _fontSize.round().toString(),
                         onChanged: (value) => setState(() => _fontSize = value),
                       ),
                     ),
                   ],
                 ),
-                
-                // Page Format
                 DropdownButtonFormField<PdfPageFormat>(
                   value: _pageFormat,
                   decoration: InputDecoration(
-                    labelText: 'Sayfa Formatı',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    labelText: widget.l10n.pageFormat,
+                    border: const OutlineInputBorder(),
                   ),
                   items: [
-                    DropdownMenuItem(value: PdfPageFormat.a4, child: Text('A4')),
-                    DropdownMenuItem(value: PdfPageFormat.a5, child: Text('A5')),
-                    DropdownMenuItem(value: PdfPageFormat.letter, child: Text('Letter')),
+                    DropdownMenuItem(value: PdfPageFormat.a4, child: Text(widget.l10n.a4)),
+                    DropdownMenuItem(value: PdfPageFormat.a5, child: Text(widget.l10n.a5)),
+                    DropdownMenuItem(value: PdfPageFormat.letter, child: Text(widget.l10n.letter)),
                   ],
                   onChanged: (value) => setState(() => _pageFormat = value!),
                 ),
-                const SizedBox(height: 16),
-                
-                // Options
-                CheckboxListTile(
-                  title: const Text('Tarih Başlığı'),
+                SwitchListTile(
+                  title: Text(widget.l10n.dateHeader),
                   value: _includeDateHeader,
-                  onChanged: (value) => setState(() => _includeDateHeader = value!),
+                  onChanged: (value) => setState(() => _includeDateHeader = value),
                 ),
-                CheckboxListTile(
-                  title: const Text('Sayfa Numaraları'),
+                SwitchListTile(
+                  title: Text(widget.l10n.pageNumbers),
                   value: _includePageNumbers,
-                  onChanged: (value) => setState(() => _includePageNumbers = value!),
+                  onChanged: (value) => setState(() => _includePageNumbers = value),
                 ),
               ],
             ),
@@ -537,129 +534,72 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.of(context).pop(),
             child: Text(widget.l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context);
-              _generateAdvancedPdf();
+              Navigator.of(context).pop();
+              _exportToPdf();
             },
-            child: Text('PDF Oluştur'),
+            child: Text(widget.l10n.createPdf),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _generateAdvancedPdf() async {
-    if (_isExporting) return;
+  Future<void> _exportToPdf() async {
     setState(() => _isExporting = true);
 
     try {
-      // Load NotoSans font from assets
-      final fontData = await rootBundle.load('assets/fonts/NotoSans-Regular.ttf');
-      final notoFont = pw.Font.ttf(fontData);
-    final pdf = pw.Document();
-      final currentDate = DateTime.now();
-    
-    pdf.addPage(
+      final pdf = pw.Document();
+      final fontData = await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
+      final ttf = pw.Font.ttf(fontData);
+
+      pdf.addPage(
         pw.MultiPage(
           pageFormat: _pageFormat,
-          margin: const pw.EdgeInsets.all(32),
-          header: _includeDateHeader ? (context) => pw.Container(
-            alignment: pw.Alignment.centerRight,
-            margin: const pw.EdgeInsets.only(bottom: 16),
-            child: pw.Text(
-              '${currentDate.day}/${currentDate.month}/${currentDate.year}',
-              style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600, font: notoFont),
-            ),
-          ) : null,
-          footer: _includePageNumbers ? (context) => pw.Container(
-            alignment: pw.Alignment.center,
-            margin: const pw.EdgeInsets.only(top: 16),
-            child: pw.Text(
-              'Sayfa ${context.pageNumber}/${context.pagesCount}',
-              style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600, font: notoFont),
-            ),
-          ) : null,
-          build: (context) => [
-            // Title
-            pw.Header(
-              level: 0,
-              child: pw.Text(
-                _documentTitle.isEmpty ? 'OCR Tarama Sonucu' : _documentTitle,
-                style: pw.TextStyle(
-                  fontSize: _fontSize + 6,
-                  fontWeight: pw.FontWeight.bold,
-                  font: notoFont,
-                ),
+          header: _includeDateHeader ? (pw.Context context) {
+            return pw.Container(
+              alignment: pw.Alignment.centerRight,
+              margin: const pw.EdgeInsets.only(bottom: 3.0 * PdfPageFormat.mm),
+              padding: const pw.EdgeInsets.only(bottom: 3.0 * PdfPageFormat.mm),
+              decoration: const pw.BoxDecoration(
+                border: pw.Border(bottom: pw.BorderSide(width: 0.5, color: PdfColors.grey700)),
               ),
+              child: pw.Text(
+                '$_documentTitle - ${DateTime.now().toLocal().toString().split(' ')[0]}',
+                style: pw.Theme.of(context).header4.copyWith(font: ttf),
+              ),
+            );
+          } : null,
+          footer: _includePageNumbers ? (pw.Context context) {
+            return pw.Container(
+              alignment: pw.Alignment.centerRight,
+              margin: const pw.EdgeInsets.only(top: 1.0 * PdfPageFormat.cm),
+              child: pw.Text(
+                'Page ${context.pageNumber} of ${context.pagesCount}',
+                style: pw.Theme.of(context).header4.copyWith(font: ttf, color: PdfColors.grey),
+              ),
+            );
+          } : null,
+          build: (pw.Context context) => [
+            pw.Paragraph(
+              text: _textController.text,
+              style: pw.TextStyle(font: ttf, fontSize: _fontSize),
             ),
-            pw.SizedBox(height: 20),
-            // Content
-            ..._analyzedLines.map((line) {
-              switch (line.type) {
-                case TextLineType.heading:
-                  return pw.Padding(
-                    padding: const pw.EdgeInsets.only(bottom: 8),
-                    child: pw.Text(
-                      line.text,
-                      style: pw.TextStyle(
-                        fontSize: _fontSize + 2,
-                        fontWeight: pw.FontWeight.bold,
-                        font: notoFont,
-                      ),
-                    ),
-                  );
-                case TextLineType.bullet:
-                  return pw.Bullet(
-                    text: line.text.replaceFirst(RegExp(r'^[-*•\d+\). ]+'), ''),
-      style: pw.TextStyle(
-                      fontSize: _fontSize,
-                      font: notoFont,
-                    ),
-                  );
-                case TextLineType.quote:
-                  return pw.Padding(
-                    padding: const pw.EdgeInsets.only(left: 16, bottom: 8),
-                    child: pw.Text(
-                      line.text,
-      style: pw.TextStyle(
-                        fontSize: _fontSize,
-                        fontStyle: pw.FontStyle.italic,
-        color: PdfColors.grey600,
-                        font: notoFont,
-                      ),
-                    ),
-                  );
-                case TextLineType.paragraph:
-                default:
-                  return pw.Padding(
-                    padding: const pw.EdgeInsets.only(bottom: 8),
-      child: pw.Text(
-                      line.text,
-                      style: pw.TextStyle(
-                        fontSize: _fontSize,
-                        font: notoFont,
-        ),
-      ),
-    );
-  }
-            }),
           ],
         ),
       );
-      
+
       final output = await getTemporaryDirectory();
-      final fileName = _documentTitle.isEmpty ? 'exported_text' : _documentTitle.replaceAll(' ', '_');
-      final file = File("${output.path}/$fileName.pdf");
-    await file.writeAsBytes(await pdf.save());
-      
-      await Share.shareXFiles([XFile(file.path)], text: 'PDF Belgesi');
-      _showSnackBar('PDF başarıyla oluşturuldu!', Colors.green);
+      final file = File("${output.path}/$_documentTitle.pdf");
+      await file.writeAsBytes(await pdf.save());
+
+      await Share.shareXFiles([XFile(file.path)], text: 'PDF Document');
     } catch (e) {
-      _showSnackBar('${widget.l10n.error}: $e', Colors.red);
+      // Handle exceptions
     } finally {
       setState(() => _isExporting = false);
     }
@@ -685,4 +625,4 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
       ),
     );
   }
-} 
+}

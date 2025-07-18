@@ -19,7 +19,9 @@ import 'utils/ocr_cache_manager.dart';
 import 'utils/performance_monitor.dart';
 import 'utils/memory_manager.dart';
 import 'database/ocr_history_database.dart';
-import 'screens/ocr_history_screen.dart';
+import 'services/admob_service.dart';
+import 'services/subscription_manager.dart';
+import 'widgets/banner_ad_widget.dart';
 
 import 'dart:developer' as developer;
 import 'package:crypto/crypto.dart';
@@ -36,11 +38,19 @@ void main() async {
   await OCRCacheManager.instance.initialize();
   await PerformanceMonitor.instance.initialize();
   
+  // Initialize AdMob
+  await AdMobService.initialize();
+  await AdMobService.instance.checkProStatus();
+  
+  // Initialize Subscription Manager
+  await SubscriptionManager.instance.initialize();
+  await SubscriptionManager.instance.loadSubscriptionStatus();
+  
   // Initialize OCR History Database
   try {
     await OCRHistoryDatabase.instance.database;
-  } catch (e) {
-    debugPrint('Database initialization error: $e');
+  } catch (e, s) {
+    developer.log('Database initialization error', error: e, stackTrace: s);
     // Continue app startup even if database fails
   }
   
@@ -209,6 +219,11 @@ class _OCRHomePageState extends State<OCRHomePage> {
                         child: _buildResultCard(),
                         duration: AppAnimations.medium,
                       ),
+                    // Banner reklam alanı
+                    const SizedBox(height: 20),
+                    BannerAdWidget(
+                      onUpgradePressed: () => _showInsufficientCreditsDialog(),
+                    ),
               ],
             ),
           ),
@@ -766,7 +781,7 @@ class _OCRHomePageState extends State<OCRHomePage> {
             children: [
               Expanded(
                 child: _buildEnhancementButton(
-                  label: 'Temel',
+                  label: context.l10n.basic,
                   level: ImageEnhancementLevel.basic,
                   icon: Icons.auto_fix_normal_outlined,
                 ),
@@ -774,7 +789,7 @@ class _OCRHomePageState extends State<OCRHomePage> {
               const SizedBox(width: 8),
               Expanded(
                 child: _buildEnhancementButton(
-                  label: 'Gelişmiş',
+                  label: context.l10n.advanced,
                   level: ImageEnhancementLevel.advanced,
                   icon: Icons.auto_fix_high_outlined,
                 ),
@@ -782,7 +797,7 @@ class _OCRHomePageState extends State<OCRHomePage> {
               const SizedBox(width: 8),
               Expanded(
                 child: _buildEnhancementButton(
-                  label: 'Otomatik',
+                  label: context.l10n.automatic,
                   level: ImageEnhancementLevel.auto,
                   icon: Icons.auto_awesome_outlined,
                 ),
@@ -790,7 +805,7 @@ class _OCRHomePageState extends State<OCRHomePage> {
               const SizedBox(width: 8),
               Expanded(
                 child: _buildEnhancementButton(
-                  label: 'Belge',
+                  label: context.l10n.document,
                   level: ImageEnhancementLevel.document,
                   icon: Icons.description_outlined,
                 ),
@@ -912,8 +927,8 @@ class _OCRHomePageState extends State<OCRHomePage> {
             children: [
               Expanded(
                 child: _buildOCRQualityButton(
-                  label: 'Hızlı',
-                  subtitle: 'ML Kit',
+                  label: context.l10n.fast,
+                  subtitle: context.l10n.mlKit,
                   quality: OCRQuality.fast,
                   icon: Icons.flash_on_outlined,
                   color: Colors.green,
@@ -922,8 +937,8 @@ class _OCRHomePageState extends State<OCRHomePage> {
               const SizedBox(width: 8),
               Expanded(
                 child: _buildOCRQualityButton(
-                  label: 'Dengeli',
-                  subtitle: '2 Motor',
+                  label: context.l10n.balanced,
+                  subtitle: context.l10n.dualEngine,
                   quality: OCRQuality.balanced,
                   icon: Icons.balance_outlined,
                   color: Colors.blue,
@@ -932,8 +947,8 @@ class _OCRHomePageState extends State<OCRHomePage> {
               const SizedBox(width: 8),
               Expanded(
                 child: _buildOCRQualityButton(
-                  label: 'Doğru',
-                  subtitle: 'Tüm Motor',
+                  label: context.l10n.accurate,
+                  subtitle: context.l10n.allEngines,
                   quality: OCRQuality.accurate,
                   icon: Icons.verified_outlined,
                   color: Colors.orange,
@@ -942,8 +957,8 @@ class _OCRHomePageState extends State<OCRHomePage> {
               const SizedBox(width: 8),
               Expanded(
                 child: _buildOCRQualityButton(
-                  label: 'Premium',
-                  subtitle: 'Cloud',
+                  label: context.l10n.premium,
+                  subtitle: context.l10n.cloud,
                   quality: OCRQuality.premium,
                   icon: Icons.cloud_outlined,
                   color: Colors.purple,
@@ -1210,18 +1225,27 @@ class _OCRHomePageState extends State<OCRHomePage> {
               Expanded(
                 child: _buildResultButton(
                   icon: Icons.edit_outlined,
-                  label: 'Düzenle',
+                  label: context.l10n.edit,
                   color: Colors.green,
                   onTap: _openTextEditor,
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
                 child: _buildResultButton(
                   icon: Icons.copy_outlined,
-                  label: 'Kopyala',
+                  label: context.l10n.copyText,
                   color: Colors.blue,
                   onTap: _copyToClipboard,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildResultButton(
+                  icon: Icons.picture_as_pdf_outlined,
+                  label: context.l10n.getPdf,
+                  color: Colors.red,
+                  onTap: _generatePDF,
                 ),
               ),
             ],
@@ -1279,6 +1303,32 @@ class _OCRHomePageState extends State<OCRHomePage> {
       await Clipboard.setData(ClipboardData(text: _extractedText));
       if (!mounted) return;
       _showSnackbar(context.l10n.textCopiedToClipboard);
+    }
+  }
+
+  Future<void> _generatePDF() async {
+    if (_extractedText.isEmpty) return;
+    
+    try {
+      // Text Editor ekranını PDF oluşturma modunda aç
+      Navigator.push(
+        context,
+        AppAnimations.createRoute(
+          page: TextEditorScreen(
+            initialText: _extractedText, 
+            l10n: context.l10n,
+            autoGeneratePDF: true, // PDF modunda aç
+          ),
+          duration: AppAnimations.medium,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ErrorHandler.handleError(
+        context,
+        e,
+        customMessage: context.l10n.pdfCreationError,
+      );
     }
   }
 
@@ -1361,7 +1411,6 @@ class _OCRHomePageState extends State<OCRHomePage> {
       pageBuilder: (context, animation, secondaryAnimation) {
         return SettingsDialog(
           onCreditsChanged: _loadCreditInfo,
-          l10n: context.l10n,
         );
       },
     );
@@ -1371,21 +1420,75 @@ class _OCRHomePageState extends State<OCRHomePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(context.l10n.insufficientCredits),
-        content: Text(
-          context.l10n.insufficientCreditsMessage,
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.orange),
+            const SizedBox(width: 8),
+            Expanded(child: Text(context.l10n.insufficientCredits)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(context.l10n.insufficientCreditsMessage),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.withAlpha((255 * 0.1).toInt()),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.star, color: Colors.blue, size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        '🚀 Pro Abonelik',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '• Sınırsız OCR işlemi\n• Reklamsız deneyim\n• Öncelikli destek',
+                    style: TextStyle(fontSize: 13, color: Colors.blue[700]),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Sadece ₺29.99/ay',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue[800],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(context.l10n.cancel),
           ),
-          ElevatedButton(
+          ElevatedButton.icon(
             onPressed: () {
               Navigator.of(context).pop();
               _showSettingsDialog();
             },
-            child: Text(context.l10n.buyCredits),
+            icon: Icon(Icons.star, size: 16),
+            label: Text('Pro Ol'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
           ),
         ],
       ),

@@ -62,5 +62,8 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<!-- AdMob App ID (Test ID for development) -->
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-2163842474515875~1177330151</string>
 </dict>
 </plist>

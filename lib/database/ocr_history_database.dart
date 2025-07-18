@@ -126,16 +126,22 @@ class OCRHistoryDatabase {
     // Create indexes for better performance
     await _createIndexes(db);
     
-    // Create full-text search virtual table
-    await db.execute('''
-      CREATE VIRTUAL TABLE ocr_search USING fts5(
-        text,
-        title,
-        notes,
-        content='$_tableOCRHistory',
-        content_rowid='id'
-      )
-    ''');
+    // Create full-text search virtual table with fallback
+    try {
+      await db.execute('''
+        CREATE VIRTUAL TABLE ocr_search USING fts5(
+          text,
+          title,
+          notes,
+          content='$_tableOCRHistory',
+          content_rowid='id'
+        )
+      ''');
+      developer.log('FTS5 search table created successfully', name: _logTag);
+    } catch (e) {
+      developer.log('FTS5 not available, skipping search table: $e', name: _logTag);
+      // FTS5 not available on this device, search will use LIKE queries
+    }
     
     // Insert default categories
     await _insertDefaultCategories(db);
@@ -154,17 +160,23 @@ class OCRHistoryDatabase {
       await db.execute('ALTER TABLE $_tableOCRHistory ADD COLUMN is_favorite INTEGER NOT NULL DEFAULT 0');
       await db.execute('ALTER TABLE $_tableOCRHistory ADD COLUMN is_archived INTEGER NOT NULL DEFAULT 0');
       
-      // Recreate FTS table
+      // Recreate FTS table with fallback
       await db.execute('DROP TABLE IF EXISTS ocr_search');
-      await db.execute('''
-        CREATE VIRTUAL TABLE ocr_search USING fts5(
-          text,
-          title,
-          notes,
-          content='$_tableOCRHistory',
-          content_rowid='id'
-        )
-      ''');
+      try {
+        await db.execute('''
+          CREATE VIRTUAL TABLE ocr_search USING fts5(
+            text,
+            title,
+            notes,
+            content='$_tableOCRHistory',
+            content_rowid='id'
+          )
+        ''');
+        developer.log('FTS5 search table recreated successfully', name: _logTag);
+      } catch (e) {
+        developer.log('FTS5 not available during upgrade, skipping search table: $e', name: _logTag);
+        // FTS5 not available on this device, search will use LIKE queries
+      }
     }
   }
   

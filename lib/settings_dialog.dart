@@ -3,19 +3,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'theme/theme_provider.dart';
 import 'services/credit_manager.dart';
+import 'services/subscription_manager.dart';
 import 'l10n/app_localizations.dart';
 import 'utils/performance_monitor.dart';
 import 'screens/ocr_history_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsDialog extends StatefulWidget {
   final VoidCallback? onCreditsChanged;
-  final AppLocalizations l10n;
   
   const SettingsDialog({
     super.key,
     this.onCreditsChanged,
-    required this.l10n,
   });
 
   @override
@@ -89,7 +87,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
           type: MaterialType.transparency,
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.4 * _fadeAnimation.value),
+              color: Colors.black.withAlpha((255 * 0.4 * _fadeAnimation.value).toInt()),
             ),
             child: Center(
               child: SlideTransition(
@@ -107,7 +105,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                       borderRadius: BorderRadius.circular(28),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.1),
+                          color: Colors.black.withAlpha(isDark ? (255 * 0.3).toInt() : (255 * 0.1).toInt()),
                           blurRadius: 40,
                           offset: const Offset(0, 10),
                         ),
@@ -167,7 +165,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-                                      color: const Color(0xFF007AFF).withValues(alpha: 0.1),
+                                      color: const Color(0xFF007AFF).withAlpha((255 * 0.1).toInt()),
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(
@@ -182,7 +180,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.l10n.settings,
+                  context.l10n.settings,
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w600,
@@ -190,7 +188,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                   ),
                 ),
                 Text(
-                  'Uygulamayı kişiselleştirin',
+                  context.l10n.settingsSubtitle,
                   style: TextStyle(
                     fontSize: 13,
                     color: isDark ? Colors.white60 : const Color(0xFF8E8E93),
@@ -205,7 +203,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05),
+                color: isDark ? Colors.white.withAlpha((255 * 0.1).toInt()) : Colors.black.withAlpha((255 * 0.05).toInt()),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
@@ -225,7 +223,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          widget.l10n.theme,
+          context.l10n.theme,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -244,8 +242,8 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                 children: [
                   _buildThemeOption(
                     isDark: isDark,
-                    title: widget.l10n.lightTheme,
-                    subtitle: 'Aydınlık görünüm',
+                    title: context.l10n.lightTheme,
+                    subtitle: context.l10n.lightThemeSubtitle,
                     icon: CupertinoIcons.sun_max_fill,
                     iconColor: const Color(0xFFFF9500),
                     mode: AppThemeMode.light,
@@ -256,8 +254,8 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                   _buildDivider(isDark),
                   _buildThemeOption(
                     isDark: isDark,
-                    title: widget.l10n.darkTheme,
-                    subtitle: 'Karanlık görünüm',
+                    title: context.l10n.darkTheme,
+                    subtitle: context.l10n.darkThemeSubtitle,
                     icon: CupertinoIcons.moon_fill,
                     iconColor: const Color(0xFF5856D6),
                     mode: AppThemeMode.dark,
@@ -267,8 +265,8 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                   _buildDivider(isDark),
                   _buildThemeOption(
                     isDark: isDark,
-                    title: widget.l10n.systemTheme,
-                    subtitle: 'Sistem ayarını takip et',
+                    title: context.l10n.systemTheme,
+                    subtitle: context.l10n.systemThemeSubtitle,
                     icon: CupertinoIcons.device_phone_portrait,
                     iconColor: const Color(0xFF34C759),
                     mode: AppThemeMode.system,
@@ -313,7 +311,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.1),
+                  color: iconColor.withAlpha((255 * 0.1).toInt()),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -371,7 +369,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          widget.l10n.language,
+          context.l10n.language,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -390,7 +388,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                 children: [
                   _buildLanguageOption(
                     isDark: isDark,
-                    title: widget.l10n.turkish,
+                    title: context.l10n.turkish,
                     subtitle: 'Türkçe',
                     icon: CupertinoIcons.globe,
                     iconColor: const Color(0xFFE74C3C),
@@ -402,7 +400,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                   _buildDivider(isDark),
                   _buildLanguageOption(
                     isDark: isDark,
-                    title: widget.l10n.english,
+                    title: context.l10n.english,
                     subtitle: 'English',
                     icon: CupertinoIcons.globe,
                     iconColor: const Color(0xFF3498DB),
@@ -455,9 +453,9 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: iconColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  color: iconColor.withAlpha((255 * 0.1).toInt()),
+                  borderRadius: BorderRadius.circular(8),
+                ),
                   child: Icon(
                     icon,
                     color: iconColor,
@@ -506,7 +504,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-                          widget.l10n.performanceStatistics,
+                          context.l10n.performanceStatistics,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -541,9 +539,9 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                 children: [
                   _buildPerformanceItem(
                     isDark: isDark,
-                    title: 'Toplam İşlem',
+                    title: context.l10n.totalOperationsLabel,
                     value: '${stats.totalOperations}',
-                    icon: CupertinoIcons.camera_fill,
+                    icon: CupertinoIcons.arrow_2_circlepath_circle_fill,
                     iconColor: const Color(0xFF007AFF),
                     isFirst: true,
                   ),
@@ -551,24 +549,24 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                     _buildDivider(isDark),
                     _buildPerformanceItem(
                       isDark: isDark,
-                      title: 'Başarı Oranı',
+                      title: context.l10n.successRateLabel,
                       value: '${(stats.successRate * 100).toStringAsFixed(1)}%',
-                      icon: CupertinoIcons.checkmark_circle_fill,
+                      icon: CupertinoIcons.checkmark_shield_fill,
                       iconColor: const Color(0xFF34C759),
                     ),
                     _buildDivider(isDark),
                     _buildPerformanceItem(
                       isDark: isDark,
-                      title: 'Ortalama Süre',
+                      title: context.l10n.averageTimeLabel,
                       value: '${stats.avgProcessingTime.inMilliseconds}ms',
-                      icon: CupertinoIcons.clock_fill,
+                      icon: CupertinoIcons.timer,
                       iconColor: const Color(0xFFFF9500),
                     ),
                     _buildDivider(isDark),
                     _buildPerformanceItem(
                       isDark: isDark,
-                      title: widget.l10n.extractedTextTitle,
-                      value: '${stats.totalTextExtracted} ${widget.l10n.characters}',
+                      title: context.l10n.extractedTextTitle,
+                      value: '${stats.totalTextExtracted} ${context.l10n.characters}',
                       icon: CupertinoIcons.textformat,
                       iconColor: const Color(0xFF8E44AD),
                       isLast: true,
@@ -602,7 +600,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.1),
+              color: iconColor.withAlpha((255 * 0.1).toInt()),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -655,7 +653,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                 onTap: () => _showDetailedStats(isDark),
                 child: Center(
                   child: Text(
-                    'Detaylı Rapor',
+                    context.l10n.detailedReportButton,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -682,7 +680,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                 onTap: () => _clearPerformanceData(),
                 child: Center(
                   child: Text(
-                    widget.l10n.clearData,
+                    context.l10n.clearData,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -710,7 +708,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
       builder: (context) => AlertDialog(
         backgroundColor: isDark ? const Color(0xFF1C1C1E) : Colors.white,
         title: Text(
-                        widget.l10n.detailedReport,
+                        context.l10n.detailedReport,
           style: TextStyle(
             color: isDark ? Colors.white : const Color(0xFF1C1C1E),
             fontWeight: FontWeight.w600,
@@ -721,17 +719,17 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-                      _buildStatRow(isDark, '${widget.l10n.totalOperations}:', '${report.totalOperations}'),
-        _buildStatRow(isDark, '${widget.l10n.successRate}:', '${(report.successRate * 100).toStringAsFixed(1)}%'),
-        _buildStatRow(isDark, '${widget.l10n.averageTime}:', '${report.avgProcessingTime.inMilliseconds}ms'),
-        _buildStatRow(isDark, '${widget.l10n.fastest}:', '${report.minProcessingTime.inMilliseconds}ms'),
-        _buildStatRow(isDark, '${widget.l10n.slowest}:', '${report.maxProcessingTime.inMilliseconds}ms'),
-        _buildStatRow(isDark, '${widget.l10n.extractedTextTitle}:', '${report.totalTextExtracted} ${widget.l10n.characters}'),
+                      _buildStatRow(isDark, '${context.l10n.totalOperations}:', '${report.totalOperations}'),
+        _buildStatRow(isDark, '${context.l10n.successRate}:', '${(report.successRate * 100).toStringAsFixed(1)}%'),
+        _buildStatRow(isDark, '${context.l10n.averageTime}:', '${report.avgProcessingTime.inMilliseconds}ms'),
+        _buildStatRow(isDark, '${context.l10n.fastest}:', '${report.minProcessingTime.inMilliseconds}ms'),
+        _buildStatRow(isDark, '${context.l10n.slowest}:', '${report.maxProcessingTime.inMilliseconds}ms'),
+        _buildStatRow(isDark, '${context.l10n.extractedTextTitle}:', '${report.totalTextExtracted} ${context.l10n.characters}'),
               
               if (report.enginePerformance.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 Text(
-                  '${widget.l10n.enginePerformance}:',
+                  '${context.l10n.enginePerformance}:',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: isDark ? Colors.white : const Color(0xFF1C1C1E),
@@ -742,7 +740,9 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                   _buildStatRow(
                     isDark,
                     '${entry.key.displayName}:',
-                    '${entry.value.totalOperations} işlem (${(entry.value.successRate * 100).toStringAsFixed(1)}%)',
+                    context.l10n.enginePerformanceValue
+                        .replaceAll('{count}', entry.value.totalOperations.toString())
+                        .replaceAll('{rate}', (entry.value.successRate * 100).toStringAsFixed(1)),
                   ),
                 ),
               ],
@@ -753,7 +753,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
-              'Kapat',
+              context.l10n.close,
               style: TextStyle(
                 color: isDark ? const Color(0xFF007AFF) : const Color(0xFF007AFF),
               ),
@@ -792,16 +792,16 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(widget.l10n.clearPerformanceData),
-        content: Text(widget.l10n.performanceDataWarning),
+        title: Text(context.l10n.clearPerformanceData),
+        content: Text(context.l10n.performanceDataWarning),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text(widget.l10n.cancel),
+            child: Text(context.l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text(widget.l10n.clear, style: const TextStyle(color: Colors.red)),
+            child: Text(context.l10n.clear, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -818,7 +818,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          widget.l10n.creditInfo,
+          context.l10n.creditInfo,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -845,7 +845,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                     children: [
                       _buildCreditItem(
                         isDark: isDark,
-                        title: widget.l10n.currentCredits,
+                        title: context.l10n.currentCredits,
                         value: '${stats.currentCredits}',
                         icon: CupertinoIcons.creditcard_fill,
                         iconColor: const Color(0xFF007AFF),
@@ -854,7 +854,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                       _buildDivider(isDark),
                       _buildCreditItem(
                         isDark: isDark,
-                        title: widget.l10n.totalUsed,
+                        title: context.l10n.totalUsed,
                         value: '${stats.totalUsed}',
                         icon: CupertinoIcons.chart_bar_fill,
                         iconColor: const Color(0xFF34C759),
@@ -862,7 +862,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                       _buildDivider(isDark),
                       _buildCreditItem(
                         isDark: isDark,
-                        title: widget.l10n.subscription,
+                        title: context.l10n.subscription,
                         value: _getSubscriptionName(stats.subscription),
                         icon: CupertinoIcons.star_fill,
                         iconColor: const Color(0xFFFF9500),
@@ -877,6 +877,8 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
         ),
         const SizedBox(height: 16),
         _buildBuyCreditsButton(isDark),
+        const SizedBox(height: 16),
+        _buildSubscriptionSection(isDark),
       ],
     );
   }
@@ -944,7 +946,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-                          color: const Color(0xFF007AFF).withValues(alpha: 0.3),
+                          color: const Color(0xFF007AFF).withAlpha((255 * 0.3).toInt()),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -966,7 +968,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  widget.l10n.buyCredits,
+                  context.l10n.buyCredits,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -1000,53 +1002,277 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
     return Container(
       height: 0.5,
       margin: const EdgeInsets.only(left: 56),
-              color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.1),
+              color: isDark ? Colors.white.withAlpha((255 * 0.1).toInt()) : Colors.black.withAlpha((255 * 0.1).toInt()),
     );
   }
 
   String _getSubscriptionName(SubscriptionType subscription) {
     switch (subscription) {
       case SubscriptionType.free:
-        return widget.l10n.freeSubscription;
+        return context.l10n.freeSubscription;
       case SubscriptionType.pro:
-        return widget.l10n.proSubscription;
+        return context.l10n.proSubscription;
       case SubscriptionType.premium:
-        return widget.l10n.premiumSubscription;
+        return context.l10n.premiumSubscription;
     }
+  }
+
+  Widget _buildSubscriptionSection(bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            context.l10n.subscription.toUpperCase(),
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: isDark ? const Color(0xFF8E8E93) : const Color(0xFF6D6D70),
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF2C2C2E) : const Color(0xFFF8F9FA),
+            borderRadius: BorderRadius.circular(16),
+            border: isDark ? null : Border.all(
+              color: const Color(0xFFE5E5EA),
+              width: 0.5,
+            ),
+          ),
+          child: Column(
+            children: [
+              _buildSubscriptionOption(
+                isDark: isDark,
+                title: '🚀 Pro Aylık',
+                subtitle: '₺29.99/ay - Reklamsız + Sınırsız OCR',
+                features: ['Reklamsız deneyim', 'Sınırsız OCR işlemi', 'Öncelikli destek'],
+                onTap: () => _purchaseSubscription('pro_monthly_subscription'),
+                isFirst: true,
+              ),
+              _buildDivider(isDark),
+              _buildSubscriptionOption(
+                isDark: isDark,
+                title: '🔥 Pro Yıllık',
+                subtitle: '₺299.99/yıl - 2 ay ücretsiz!',
+                features: ['Reklamsız deneyim', 'Sınırsız OCR işlemi', 'Öncelikli destek', '2 ay bedava'],
+                onTap: () => _purchaseSubscription('pro_yearly_subscription'),
+              ),
+              _buildDivider(isDark),
+              _buildSubscriptionOption(
+                isDark: isDark,
+                title: '💎 Premium Aylık',
+                subtitle: '₺49.99/ay - Tüm özellikler',
+                features: ['Tüm Pro özellikler', 'Toplu işleme', 'API erişimi', 'Öncelik desteği'],
+                onTap: () => _purchaseSubscription('premium_monthly_subscription'),
+              ),
+              _buildDivider(isDark),
+              _buildSubscriptionOption(
+                isDark: isDark,
+                title: '👑 Premium Yıllık',
+                subtitle: '₺499.99/yıl - En iyi değer!',
+                features: ['Tüm Pro özellikler', 'Toplu işleme', 'API erişimi', 'Öncelik desteği', '2 ay bedava'],
+                onTap: () => _purchaseSubscription('premium_yearly_subscription'),
+                isLast: true,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _buildRestorePurchasesButton(isDark),
+      ],
+    );
+  }
+
+  Widget _buildSubscriptionOption({
+    required bool isDark,
+    required String title,
+    required String subtitle,
+    required List<String> features,
+    required VoidCallback onTap,
+    bool isFirst = false,
+    bool isLast = false,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.vertical(
+          top: isFirst ? const Radius.circular(16) : Radius.zero,
+          bottom: isLast ? const Radius.circular(16) : Radius.zero,
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? Colors.white : const Color(0xFF1C1C1E),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: isDark ? const Color(0xFF8E8E93) : const Color(0xFF6D6D70),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    CupertinoIcons.chevron_right,
+                    size: 16,
+                    color: isDark ? const Color(0xFF8E8E93) : const Color(0xFF6D6D70),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: features.map((feature) => Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF007AFF).withAlpha((255 * 0.1).toInt()),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    feature,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Color(0xFF007AFF),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                )).toList(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRestorePurchasesButton(bool isDark) {
+    return Container(
+      width: double.infinity,
+      child: CupertinoButton(
+        onPressed: _restorePurchases,
+        padding: EdgeInsets.zero,
+        child: Text(
+          'Satın Alımları Geri Yükle',
+          style: TextStyle(
+            color: const Color(0xFF007AFF),
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _purchaseSubscription(String productId) async {
+    try {
+      final subscriptionManager = SubscriptionManager.instance;
+      
+      if (!subscriptionManager.isInitialized) {
+        _showMessage('Abonelik sistemi henüz hazır değil. Lütfen tekrar deneyin.');
+        return;
+      }
+
+      if (!subscriptionManager.isAvailable) {
+        _showMessage('Bu cihazda satın alma mevcut değil.');
+        return;
+      }
+
+      _showMessage('Satın alma işlemi başlatılıyor...');
+      
+      final success = await subscriptionManager.purchaseSubscription(productId);
+      
+      if (success) {
+        _showMessage('Satın alma işlemi başarıyla başlatıldı.');
+      } else {
+        _showMessage('Satın alma işlemi başlatılamadı.');
+      }
+    } catch (e) {
+      _showMessage('Hata: $e');
+    }
+  }
+
+  Future<void> _restorePurchases() async {
+    try {
+      _showMessage('Satın alımlar geri yükleniyor...');
+      
+      final subscriptionManager = SubscriptionManager.instance;
+      await subscriptionManager.initialize(); // This includes restoring purchases
+      
+      _showMessage('Satın alımlar kontrol edildi.');
+      
+      // Refresh credit info to reflect any restored subscriptions
+      if (widget.onCreditsChanged != null) {
+        widget.onCreditsChanged!();
+      }
+    } catch (e) {
+      _showMessage('Geri yükleme sırasında hata: $e');
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   void _showCreditPurchaseDialog(BuildContext context) {
     showCupertinoModalPopup(
       context: context,
       builder: (context) => CupertinoActionSheet(
-        title: Text(widget.l10n.buyCredits),
-        message: Text(widget.l10n.selectCreditPackage),
+        title: Text(context.l10n.buyCredits),
+        message: Text(context.l10n.selectCreditPackage),
         actions: [
           CupertinoActionSheetAction(
             onPressed: () {
               Navigator.pop(context);
               _purchaseCredits(50);
             },
-            child: Text('50 ${widget.l10n.credits} - ₺9.99'),
+            child: Text(context.l10n.buy50Credits),
           ),
           CupertinoActionSheetAction(
             onPressed: () {
               Navigator.pop(context);
               _purchaseCredits(100);
             },
-            child: Text('100 ${widget.l10n.credits} - ₺19.99'),
+            child: Text(context.l10n.buy100Credits),
           ),
           CupertinoActionSheetAction(
             onPressed: () {
               Navigator.pop(context);
               _purchaseCredits(250);
             },
-            child: Text('250 ${widget.l10n.credits} - ₺39.99'),
+            child: Text(context.l10n.buy250Credits),
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
           onPressed: () => Navigator.pop(context),
-          child: Text(widget.l10n.cancel),
+          child: Text(context.l10n.cancel),
         ),
       ),
     );
@@ -1061,7 +1287,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
     // Show success message
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$amount ${widget.l10n.creditsAddedSuccess}'),
+        content: Text('$amount ${context.l10n.creditsAddedSuccess}'),
         backgroundColor: const Color(0xFF34C759),
       ),
     );
@@ -1079,7 +1305,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
               width: 28,
               height: 28,
               decoration: BoxDecoration(
-                color: const Color(0xFF8E44AD).withValues(alpha: 0.1),
+                color: const Color(0xFF8E44AD).withAlpha((255 * 0.1).toInt()),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(
@@ -1090,7 +1316,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
             ),
             const SizedBox(width: 12),
             Text(
-              'OCR Geçmişi',
+              context.l10n.ocrHistoryTitle,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
@@ -1126,7 +1352,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF8E44AD).withValues(alpha: 0.1),
+                        color: const Color(0xFF8E44AD).withAlpha((255 * 0.1).toInt()),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
@@ -1141,7 +1367,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Geçmiş OCR İşlemlerini Görüntüle',
+                            context.l10n.viewOcrHistory,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -1150,7 +1376,7 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            'Tüm tarama geçmişinizi ve sonuçlarını görün',
+                            context.l10n.viewOcrHistorySubtitle,
                             style: TextStyle(
                               fontSize: 13,
                               color: isDark ? Colors.white60 : const Color(0xFF8E8E93),
@@ -1173,4 +1399,4 @@ class _SettingsDialogState extends State<SettingsDialog> with TickerProviderStat
       ],
     );
   }
-} 
+}

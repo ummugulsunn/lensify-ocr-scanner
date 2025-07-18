@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
+import '../l10n/app_localizations.dart';
 
 /// Comprehensive error handling ve user feedback sistemi
 class ErrorHandler {
@@ -340,7 +341,7 @@ class ErrorHandler {
         // Farklı dosya seçmeye yönlendir
         break;
       case RecoveryActionType.contactSupport:
-        _showSupportInfo(context);
+        _showSupportDialog(context);
         break;
     }
   }
@@ -394,21 +395,21 @@ class ErrorHandler {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Bağlantı İpuçları'),
-        content: const Column(
+        title: Text(context.l10n.connectionTips),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('• Wi-Fi bağlantınızı kontrol edin'),
-            Text('• Mobil verilerinizi açın'),
-            Text('• Uçak modunu kapatın'),
-            Text('• Router\'ınızı yeniden başlatın'),
+            Text(context.l10n.checkWifi),
+            Text(context.l10n.enableMobileData),
+            Text(context.l10n.disableAirplaneMode),
+            Text(context.l10n.restartRouter),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Tamam'),
+            child: Text(context.l10n.ok),
           ),
         ],
       ),
@@ -420,21 +421,21 @@ class ErrorHandler {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Depolama İpuçları'),
-        content: const Column(
+        title: Text(context.l10n.storageTips),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('• Gereksiz fotoğrafları silin'),
-            Text('• Önbelleği temizleyin'),
-            Text('• Kullanmadığınız uygulamaları kaldırın'),
-            Text('• Dosyaları bulut depolamaya taşıyın'),
+            Text(context.l10n.deleteUnnecessaryPhotos),
+            Text(context.l10n.clearCache),
+            Text(context.l10n.uninstallUnusedApps),
+            Text(context.l10n.moveFilesToCloud),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Tamam'),
+            child: Text(context.l10n.ok),
           ),
         ],
       ),
@@ -442,27 +443,27 @@ class ErrorHandler {
   }
 
   /// Destek bilgileri göster
-  static void _showSupportInfo(BuildContext context) {
+  static void _showSupportDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Destek'),
-        content: const Column(
+        title: Text(context.l10n.support),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Sorun devam ederse:'),
-            SizedBox(height: 8),
-            Text('• Uygulamayı yeniden başlatın'),
-            Text('• Cihazınızı yeniden başlatın'),
-            Text('• Uygulama güncellemelerini kontrol edin'),
-            Text('• Geliştirici ile iletişime geçin'),
+            Text(context.l10n.ifProblemPersists),
+            const SizedBox(height: 8),
+            Text(context.l10n.restartApp),
+            Text(context.l10n.restartDevice),
+            Text(context.l10n.checkAppUpdates),
+            Text(context.l10n.contactDeveloper),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Tamam'),
+            child: Text(context.l10n.ok),
           ),
         ],
       ),

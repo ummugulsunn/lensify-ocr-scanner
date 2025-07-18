@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'dart:developer' as developer;
 import '../database/ocr_history_database.dart';
 import '../l10n/app_localizations.dart';
-import '../theme/theme_provider.dart';
 import '../animations/animations.dart';
 import '../utils/error_handler.dart';
 import '../text_editor_screen.dart';
@@ -22,7 +20,7 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   
-  List<OCRHistoryEntry> _historyEntries = [];
+  final List<OCRHistoryEntry> _historyEntries = [];
   List<OCRCategory> _categories = [];
   OCRHistoryStats? _stats;
   
@@ -237,17 +235,16 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Silme Onayı'),
-        content: Text('Bu OCR kaydını silmek istediğinizden emin misiniz?'),
+        title: Text(context.l10n.deleteConfirmation),
+        content: Text(context.l10n.deleteConfirmationMessage),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.of(context).pop(false),
             child: Text(context.l10n.cancel),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text('Sil'),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(context.l10n.delete, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -261,11 +258,11 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
         });
         
         if (mounted) {
-          ErrorHandler.showSuccess(context, 'Kayıt silindi');
+          ErrorHandler.showSuccess(context, context.l10n.recordDeleted);
         }
       } catch (e) {
         if (mounted) {
-          ErrorHandler.handleError(context, e, customMessage: 'Kayıt silinemedi');
+          ErrorHandler.handleError(context, e, customMessage: context.l10n.recordDeletionFailed);
         }
       }
     }
@@ -274,17 +271,15 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    
     return Scaffold(
       appBar: AppBar(
-        title: Text('OCR Geçmişi'),
+        title: Text(l10n.ocrHistory),
         bottom: TabBar(
           controller: _tabController,
           tabs: [
-            Tab(icon: Icon(Icons.history), text: 'Geçmiş'),
-            Tab(icon: Icon(Icons.category), text: 'Kategoriler'),
-            Tab(icon: Icon(Icons.analytics), text: 'İstatistikler'),
+            Tab(icon: Icon(Icons.history), text: l10n.history),
+            Tab(icon: Icon(Icons.category), text: l10n.categories),
+            Tab(icon: Icon(Icons.analytics), text: l10n.statistics),
           ],
         ),
         actions: [
@@ -316,10 +311,10 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
                 }
               },
               itemBuilder: (context) => [
-                PopupMenuItem(value: 'date_desc', child: Text('En Yeni')),
-                PopupMenuItem(value: 'date_asc', child: Text('En Eski')),
-                PopupMenuItem(value: 'confidence_desc', child: Text('Yüksek Güven')),
-                PopupMenuItem(value: 'confidence_asc', child: Text('Düşük Güven')),
+                PopupMenuItem(value: 'date_desc', child: Text(l10n.sortByDateDesc)),
+                PopupMenuItem(value: 'date_asc', child: Text(l10n.sortByDateAsc)),
+                PopupMenuItem(value: 'confidence_desc', child: Text(l10n.sortByConfidenceDesc)),
+                PopupMenuItem(value: 'confidence_asc', child: Text(l10n.sortByConfidenceAsc)),
               ],
             ),
           ],
@@ -349,13 +344,13 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
             Icon(Icons.history, size: 64, color: Colors.grey),
             SizedBox(height: 16),
             Text(
-              _isSearching ? 'Arama sonucu bulunamadı' : 'Henüz OCR geçmişi yok',
+              _isSearching ? context.l10n.searchNoResults : context.l10n.noHistory,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey),
             ),
             if (_isSearching) ...[
               SizedBox(height: 8),
               Text(
-                '"$_searchQuery" için sonuç bulunamadı',
+                '"$_searchQuery" ${context.l10n.searchNoResultsForQuery}',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
               ),
             ],
@@ -391,10 +386,9 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
   }
 
   Widget _buildHistoryCard(OCRHistoryEntry entry) {
-    final theme = Theme.of(context);
     final category = _categories.firstWhere(
       (c) => c.id == entry.categoryId,
-      orElse: () => OCRCategory(name: 'Kategorisiz', createdAt: DateTime.now()),
+      orElse: () => OCRCategory(name: context.l10n.uncategorized, createdAt: DateTime.now()),
     );
 
     return Card(
@@ -418,7 +412,7 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
                         if (entry.title?.isNotEmpty == true) ...[
                           Text(
                             entry.title!,
-                            style: theme.textTheme.titleMedium?.copyWith(
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                             maxLines: 1,
@@ -431,13 +425,13 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
                             Icon(
                               _getEngineIcon(entry.engine),
                               size: 16,
-                              color: theme.colorScheme.primary,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                             SizedBox(width: 4),
                             Text(
                               entry.engine,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.primary,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -445,12 +439,12 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
                             Container(
                               padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: _getConfidenceColor(entry.confidence).withOpacity(0.1),
+                                color: _getConfidenceColor(entry.confidence).withAlpha(25),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
                                 '${(entry.confidence * 100).toStringAsFixed(0)}%',
-                                style: theme.textTheme.bodySmall?.copyWith(
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: _getConfidenceColor(entry.confidence),
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -480,8 +474,8 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
                       }
                     },
                     itemBuilder: (context) => [
-                      PopupMenuItem(value: 'edit', child: Text('Düzenle')),
-                      PopupMenuItem(value: 'delete', child: Text('Sil')),
+                      PopupMenuItem(value: 'edit', child: Text(context.l10n.edit)),
+                      PopupMenuItem(value: 'delete', child: Text(context.l10n.delete)),
                     ],
                   ),
                 ],
@@ -492,7 +486,7 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
               // Text preview
               Text(
                 entry.text,
-                style: theme.textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyMedium,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -506,12 +500,12 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Color(int.parse(category.color?.replaceFirst('#', '0xFF') ?? '0xFF2196F3')).withOpacity(0.1),
+                        color: Color(int.parse(category.color?.replaceFirst('#', '0xFF') ?? '0xFF2196F3')).withAlpha(25),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         category.name,
-                        style: theme.textTheme.bodySmall?.copyWith(
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Color(int.parse(category.color?.replaceFirst('#', '0xFF') ?? '0xFF2196F3')),
                           fontWeight: FontWeight.w500,
                         ),
@@ -523,15 +517,15 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
                     Icon(Icons.collections, size: 14, color: Colors.grey),
                     SizedBox(width: 4),
                     Text(
-                      '${entry.imageCount} resim',
-                      style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey),
+                      '${entry.imageCount} ${context.l10n.images}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
                     ),
                     SizedBox(width: 8),
                   ],
                   Spacer(),
                   Text(
                     _formatDate(entry.createdAt),
-                    style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
                   ),
                 ],
               ),
@@ -561,7 +555,7 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
             ),
             title: Text(category.name),
             subtitle: Text(category.description ?? ''),
-            trailing: Text('${category.itemCount} öğe'),
+            trailing: Text('${category.itemCount} ${context.l10n.items}'),
             onTap: () => _applyFilter(category: category.id.toString()),
           ),
         );
@@ -579,20 +573,20 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
       child: Column(
         children: [
           _buildStatsCard(
-            'Genel İstatistikler',
+            context.l10n.generalStatistics,
             [
-              _buildStatRow('Toplam Kayıt', '${_stats!.totalEntries}'),
-              _buildStatRow('Favoriler', '${_stats!.favoritesCount}'),
-              _buildStatRow('Arşivlenenler', '${_stats!.archivedCount}'),
-              _buildStatRow('Ortalama Güven', '${(_stats!.averageConfidence * 100).toStringAsFixed(1)}%'),
-              _buildStatRow('Ortalama Süre', '${_stats!.averageProcessingTime}ms'),
+              _buildStatRow(context.l10n.totalRecords, '${_stats!.totalEntries}'),
+              _buildStatRow(context.l10n.favorites, '${_stats!.favoritesCount}'),
+              _buildStatRow(context.l10n.archived, '${_stats!.archivedCount}'),
+              _buildStatRow(context.l10n.averageConfidence, '${(_stats!.averageConfidence * 100).toStringAsFixed(1)}%'),
+              _buildStatRow(context.l10n.averageProcessingTime, '${_stats!.averageProcessingTime}ms'),
             ],
           ),
           
           SizedBox(height: 16),
           
           _buildStatsCard(
-            'Motor Kullanımı',
+            context.l10n.engineUsage,
             _stats!.engineStats.entries.map((e) => 
               _buildStatRow(e.key, '${e.value}')
             ).toList(),
@@ -601,7 +595,7 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
           SizedBox(height: 16),
           
           _buildStatsCard(
-            'Dil Dağılımı',
+            context.l10n.languageDistribution,
             _stats!.languageStats.entries.map((e) => 
               _buildStatRow(e.key, '${e.value}')
             ).toList(),
@@ -652,11 +646,11 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Arama'),
+        title: Text(context.l10n.search),
         content: TextField(
           controller: _searchController,
           decoration: InputDecoration(
-            hintText: 'Metin içinde ara...',
+            hintText: context.l10n.searchHint,
             prefixIcon: Icon(Icons.search),
           ),
           onSubmitted: (value) {
@@ -671,14 +665,14 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
               _searchController.clear();
               _performSearch('');
             },
-            child: Text('Temizle'),
+            child: Text(context.l10n.clear),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _performSearch(_searchController.text);
             },
-            child: Text('Ara'),
+            child: Text(context.l10n.search),
           ),
         ],
       ),
@@ -689,16 +683,16 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Filtrele'),
+        title: Text(context.l10n.filter),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // Category filter
             DropdownButtonFormField<String>(
               value: _selectedCategory,
-              decoration: InputDecoration(labelText: 'Kategori'),
+              decoration: InputDecoration(labelText: context.l10n.category),
               items: [
-                DropdownMenuItem(value: null, child: Text('Tümü')),
+                DropdownMenuItem(value: null, child: Text(context.l10n.all)),
                 ..._categories.map((c) => DropdownMenuItem(
                   value: c.id.toString(),
                   child: Text(c.name),
@@ -708,12 +702,12 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
             ),
             SizedBox(height: 16),
             CheckboxListTile(
-              title: Text('Sadece Favoriler'),
+              title: Text(context.l10n.favoritesOnly),
               value: _showFavoritesOnly,
               onChanged: (value) => _showFavoritesOnly = value ?? false,
             ),
             CheckboxListTile(
-              title: Text('Sadece Arşivlenenler'),
+              title: Text(context.l10n.archivedOnly),
               value: _showArchivedOnly,
               onChanged: (value) => _showArchivedOnly = value ?? false,
             ),
@@ -725,7 +719,7 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
               Navigator.pop(context);
               _applyFilter();
             },
-            child: Text('Uygula'),
+            child: Text(context.l10n.apply),
           ),
         ],
       ),
@@ -746,7 +740,7 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
   }
 
   void _editEntry(OCRHistoryEntry entry) {
-    // TODO: Implement edit functionality
+    _openTextEditor(entry);
   }
 
   IconData _getEngineIcon(String engine) {
@@ -788,13 +782,16 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
     final diff = now.difference(date);
     
     if (diff.inDays == 0) {
+      if (diff.inHours < 1) {
+        return '${diff.inMinutes} ${context.l10n.minutesAgo}';
+      }
       return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
     } else if (diff.inDays == 1) {
-      return 'Dün';
+      return context.l10n.yesterday;
     } else if (diff.inDays < 7) {
-      return '${diff.inDays} gün önce';
+      return '${diff.inDays} ${context.l10n.daysAgo}';
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
   }
-} 
+}
