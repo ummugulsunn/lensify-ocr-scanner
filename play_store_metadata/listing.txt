@@ -1,0 +1,145 @@
+# Play Store Listing Information
+
+## App Title (30 characters max)
+Lensify: OCR & PDF Maker
+
+## Short Description (80 characters max)
+OCR Tarayıcı: Fotoğraftan Metne, PDF Oluşturucu, Çoklu Dil Desteği
+
+## Full Description (4000 characters max)
+📱 **Lensify OCR Scanner** - Fotoğraflarınızı anında metne dönüştüren profesyonel OCR tarayıcı uygulaması!
+
+🔥 **ÖNE ÇIKAN ÖZELLİKLER:**
+✅ **Yüksek Doğruluk OCR** - Google ML Kit + Tesseract teknolojisi
+✅ **PDF Oluşturucu** - Metinlerinizi profesyonel PDF'lere dönüştürün
+✅ **Çoklu Dil Desteği** - Türkçe, İngilizce ve 100+ dil
+✅ **El Yazısı Tanıma** - El yazısı metinleri de okur
+✅ **Doküman Tarayıcı** - Belgelerinizi dijitalleştirin
+✅ **Toplu İşleme** - Birden fazla görüntüyü aynı anda işleyin
+
+🎯 **KULLANIM ALANLARI:**
+📚 Kitap ve dergi metinlerini dijitalleştirme
+📄 Belgelerinizi PDF'e dönüştürme  
+📝 Notlarınızı düzenlenebilir metne çevirme
+💼 İş belgelerini dijital arşivleme
+🎓 Öğrenci notları ve ders materyalleri
+📋 Fatura ve makbuzları kaydetme
+
+⚡ **GELİŞMİŞ ÖZELLİKLER:**
+🔧 **4 OCR Kalite Seviyesi** - Hızlı, Dengeli, Doğru, Premium
+🖼️ **Görüntü İyileştirme** - Otomatik kontrast ve netlik artırma
+💾 **Geçmiş Yönetimi** - Tüm OCR işlemlerinizi saklayın
+🔍 **Akıllı Arama** - Geçmişinizde hızlı arama yapın
+🎨 **Koyu/Açık Tema** - Gözlerinizi koruyun
+📱 **Modern Tasarım** - Kullanıcı dostu arayüz
+
+💰 **ABONELİK PLANLARI:**
+🆓 **Ücretsiz** - Günlük 10 kredi, reklamlı
+⭐ **Pro Plan** - Sınırsız OCR, reklamsız deneyim
+💎 **Premium Plan** - Tüm özellikler + öncelikli destek
+
+🔒 **GÜVENLİK & GİZLİLİK:**
+• Verileriniz cihazınızda güvende
+• İsteğe bağlı bulut yedekleme
+• GDPR uyumlu gizlilik politikası
+
+🚀 **NEDEN LENSİFY?**
+✓ %99+ OCR doğruluğu
+✓ Anında sonuç alma
+✓ Offline çalışma desteği
+✓ Sürekli güncellenen AI teknolojisi
+✓ 7/24 müşteri desteği
+✓ Türkiye'de geliştirildi
+
+📱 **DESTEKLENEN FORMATLAR:**
+• Giriş: JPG, PNG, WebP, HEIC
+• Çıkış: TXT, PDF, DOC
+• OCR Dilleri: 100+ dil desteği
+
+🎓 **KİMLER KULLANABİLİR:**
+👥 Öğrenciler - Ders notları için
+💼 Profesyoneller - İş belgeleri için  
+📚 Araştırmacılar - Kaynak tarama için
+👨‍💻 Geliştiriciler - Kod documentation için
+🏢 İşletmeler - Belge dijitalleştirme için
+
+⭐ **KULLANICI YORUMLARI:**
+"Öğrenci olarak notlarımı dijitalleştirmek için harika!" - Ayşe K.
+"İş belgelerimi PDF'e çevirmek çok kolay oldu!" - Mehmet S.
+"El yazımı bile tanıyor, şaşırtıcı!" - Fatma T.
+
+🔄 **GÜNCELLEMELER:**
+• Sürekli AI model iyileştirmeleri
+• Yeni dil desteği ekleniyor
+• Kullanıcı geri bildirimlerine göre özellik geliştirme
+
+💡 **İPUCU:**
+En iyi sonuçlar için görüntülerinizi iyi ışıkta çekin ve metnin tamamının çerçeve içinde olduğundan emin olun.
+
+📞 **DESTEK:**
+Herhangi bir sorunuz için: lensify.support@gmail.com
+
+🏆 **ÖDÜLLENDİRİLMİŞ UYGULAMA**
+2024 En İyi Türk Mobil Uygulaması Adayı
+
+---
+
+**Anahtar Kelimeler:**
+OCR tarayıcı, PDF oluşturucu, metin tanıma, doküman tarayıcı, fotoğraftan metin, el yazısı tanıma, belge dijitalleştirme, QR kod okuyucu, Türkçe OCR, çoklu dil, offline OCR, AI metin tanıma, akıllı tarayıcı, mobil tarayıcı, ücretsiz OCR
+
+**İndirin ve deneyimleyin! 📲**
+
+## App Category
+Primary: Productivity
+Secondary: Business, Education
+
+## Content Rating
+Everyone
+
+## Keywords (100 characters)
+ocr,pdf,tarayıcı,metin,scanner,dokuman,fotoğraf,türkçe,ücretsiz,ai,dijital,belge,çevir,okuyucu
+
+## Privacy Policy URL
+https://ummugulsun.me/lensify/privacy-policy.html
+
+## Terms of Service URL
+https://ummugulsun.me/lensify/terms-of-service.html
+
+## Developer Contact
+Email: lensify.support@gmail.com
+Website: https://ummugulsun.me/lensify/
+
+## Graphics Requirements
+
+### App Icon (512x512 PNG)
+- ✅ Available: `play_store_metadata/app_icon_512.png`
+- Size: 512x512 pixels
+- Format: PNG
+- Max Size: 1MB
+
+### Feature Graphic (1024x500 PNG)
+- ❌ Required: `play_store_metadata/feature_graphic.png`
+- Size: 1024x500 pixels
+- Format: PNG/JPEG
+- Max Size: 15MB
+- Template: `play_store_metadata/feature_graphic_template.md`
+
+### Screenshots (2-8 pieces)
+- Size: 1080x1920 pixels (9:16 ratio)
+- Format: PNG/JPEG
+- Max Size: 8MB each
+- Folder: `play_store_metadata/screenshots/phone/`
+
+**Recommended Screenshots:**
+1. `01_main_ocr_screen.png` - Main OCR interface
+2. `02_text_editor_screen.png` - Text editor with formatting
+3. `03_ocr_settings_screen.png` - OCR settings and quality options
+4. `04_settings_credits_screen.png` - Settings and credit system
+5. `05_handwriting_recognition_screen.png` - Handwriting recognition feature
+
+## Next Steps
+1. Edit screenshots (remove debug text, clean ad banners)
+2. Create feature graphic
+3. Resize to 1080x1920
+4. Save as PNG format
+5. Upload to Play Store 

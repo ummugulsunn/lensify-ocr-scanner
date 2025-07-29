@@ -37,8 +37,10 @@ class MemoryManager {
   
   /// Register a temporary file for cleanup
   static void registerTempFile(String filePath) {
-    _tempFiles.add(filePath);
-    _operationCount++;
+    if (!_tempFiles.contains(filePath)) {
+      _tempFiles.add(filePath);
+      _operationCount++;
+    }
     
     // Periodic cleanup
     if (_operationCount % _cleanupInterval == 0) {
@@ -58,7 +60,11 @@ class MemoryManager {
         }
         toRemove.add(filePath);
       } catch (e) {
-        developer.log('Error deleting temp file $filePath: $e', name: _logTag);
+        if (e is FileSystemException && e.osError?.errorCode == 2) {
+          developer.log('Temp file already deleted: $filePath', name: _logTag);
+        } else {
+          developer.log('Error deleting temp file $filePath: $e', name: _logTag);
+        }
       }
     }
     

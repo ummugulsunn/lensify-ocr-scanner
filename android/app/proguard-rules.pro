@@ -1,102 +1,59 @@
-# Lensify OCR Scanner - Proguard Rules for Production Release
+# Add project specific ProGuard rules here.
+# You can control the set of applied configuration files using the
+# proguardFiles setting in build.gradle.
+#
+# For more details, see
+#   http://developer.android.com/guide/developing/tools/proguard.html
 
-# Keep main application class
--keep public class com.lensify.ocr_scanner.MainActivity
--keep public class io.flutter.app.FlutterApplication
--keep public class io.flutter.plugin.**
--keep public class io.flutter.embedding.engine.**
+# If your project uses WebView with JS, uncomment the following
+# and specify the fully qualified class name to the JavaScript interface
+# class:
+#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+#   public *;
+#}
+
+# Uncomment this to preserve the line number information for
+# debugging stack traces.
+#-keepattributes SourceFile,LineNumberTable
+
+# If you keep the line number information, uncomment this to
+# hide the original source file name.
+#-renamesourcefileattribute SourceFile
 
 # Flutter specific rules
--keep class io.flutter.** { *; }
--keep class io.flutter.plugins.** { *; }
--keep class io.flutter.embedding.** { *; }
--dontwarn io.flutter.**
+-keep class io.flutter.app.** { *; }
+-keep class io.flutter.plugin.**  { *; }
+-keep class io.flutter.util.**  { *; }
+-keep class io.flutter.view.**  { *; }
+-keep class io.flutter.**  { *; }
+-keep class io.flutter.plugins.**  { *; }
 
-# Google ML Kit OCR
+# Google ML Kit rules
 -keep class com.google.mlkit.** { *; }
--keep class com.google.android.gms.** { *; }
--dontwarn com.google.mlkit.**
--dontwarn com.google.android.gms.**
+-keep class com.google.android.gms.vision.** { *; }
+-keep class com.google.android.gms.common.** { *; }
 
-# Google Mobile Ads (AdMob)
+# Tesseract OCR rules
+-keep class com.googlecode.tesseract.** { *; }
+-keep class net.sourceforge.tess4j.** { *; }
+
+# AdMob rules
 -keep class com.google.android.gms.ads.** { *; }
--keep class com.google.ads.** { *; }
--dontwarn com.google.android.gms.ads.**
 
-# Tesseract OCR
--keep class com.rmtheis.tess.** { *; }
--dontwarn com.rmtheis.tess.**
-
-# Image Picker
--keep class io.flutter.plugins.imagepicker.** { *; }
--dontwarn io.flutter.plugins.imagepicker.**
-
-# Permission Handler
--keep class com.baseflow.permissionhandler.** { *; }
--dontwarn com.baseflow.permissionhandler.**
-
-# Path Provider
--keep class io.flutter.plugins.pathprovider.** { *; }
--dontwarn io.flutter.plugins.pathprovider.**
-
-# Shared Preferences
--keep class io.flutter.plugins.sharedpreferences.** { *; }
--dontwarn io.flutter.plugins.sharedpreferences.**
-
-# Share Plus
--keep class dev.fluttercommunity.plus.share.** { *; }
--dontwarn dev.fluttercommunity.plus.share.**
-
-# SQLite
--keep class io.flutter.plugins.sqflite.** { *; }
--dontwarn io.flutter.plugins.sqflite.**
-
-# In-App Purchase
--keep class io.flutter.plugins.inapppurchase.** { *; }
--dontwarn io.flutter.plugins.inapppurchase.**
-
-# PDF Generation
--keep class printing.** { *; }
--dontwarn printing.**
-
-# General Android/Java optimizations
--optimizationpasses 5
--dontusemixedcaseclassnames
--dontskipnonpubliclibraryclasses
--dontpreverify
--verbose
-
-# Keep line numbers for crash reports
--keepattributes SourceFile,LineNumberTable
--renamesourcefileattribute SourceFile
-
-# Remove logs in production
--assumenosideeffects class android.util.Log {
-    public static *** d(...);
-    public static *** v(...);
-    public static *** i(...);
-    public static *** w(...);
-    public static *** e(...);
-}
+# In-app purchase rules
+-keep class com.android.billingclient.** { *; }
 
 # Keep native methods
 -keepclasseswithmembernames class * {
     native <methods>;
 }
 
-# Keep enums
--keepclassmembers enum * {
-    public static **[] values();
-    public static ** valueOf(java.lang.String);
-}
-
-# Keep Parcelable classes
--keepclassmembers class * implements android.os.Parcelable {
-    public static final android.os.Parcelable$Creator CREATOR;
+# Keep Parcelable implementations
+-keep class * implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator *;
 }
 
 # Keep Serializable classes
--keepnames class * implements java.io.Serializable
 -keepclassmembers class * implements java.io.Serializable {
     static final long serialVersionUID;
     private static final java.io.ObjectStreamField[] serialPersistentFields;
@@ -106,24 +63,13 @@
     java.lang.Object readResolve();
 }
 
-# Keep annotations
--keepattributes *Annotation*
-
-# Keep generic signatures
--keepattributes Signature
-
-# Keep inner classes
--keepattributes InnerClasses
-
-# Optimization: Remove unnecessary method calls
--assumenosideeffects class java.lang.StringBuilder {
-    public java.lang.StringBuilder();
-    public java.lang.StringBuilder(int);
-    public java.lang.StringBuilder(java.lang.String);
-    public java.lang.StringBuilder append(...);
-    public java.lang.String toString();
+# Keep enum classes
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
 }
 
-# Don't obfuscate crash reporting
--keep class com.crashlytics.** { *; }
--dontwarn com.crashlytics.** 
+# Keep R classes
+-keep class **.R$* {
+    public static <fields>;
+} 

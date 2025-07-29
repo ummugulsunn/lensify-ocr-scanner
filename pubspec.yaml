@@ -1,10 +1,8 @@
 name: lensify
-description: "Lensify - OCR Scanner & PDF Generator"
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+description: "Lensify - Professional OCR Scanner & PDF Generator"
+publish_to: 'none'
 
-# The following defines the version and build number for your application.
-# version: X.Y.Z+BUILD_NUMBER
-version: 1.1.0+2
+version: 1.1.0+3
 
 environment:
   sdk: ^3.7.2
@@ -15,51 +13,46 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  # UI & Icons
+  # Core UI
   cupertino_icons: ^1.0.8
   
   # Image & Camera
   image_picker: ^1.1.2
   permission_handler: ^12.0.1
-  image: ^4.1.7  # Image processing
+  image: ^4.1.7
   
   # OCR & ML
   google_mlkit_text_recognition: ^0.15.0
-  flutter_tesseract_ocr: ^0.4.26  # Tesseract OCR Engine
-  google_mlkit_digital_ink_recognition: ^0.14.1  # Handwriting recognition
+  flutter_tesseract_ocr: ^0.4.29
+  google_mlkit_digital_ink_recognition: ^0.14.1
   
   # PDF & File Operations
-  pdf: ^3.10.7
-  path_provider: ^2.1.1
-  share_plus: ^7.2.1
+  pdf: ^3.10.8
+  path_provider: ^2.1.2
+  share_plus: ^11.0.0
   
-  # Storage & Preferences
-  shared_preferences: ^2.3.2
+  # State Management & Storage
+  shared_preferences: ^2.3.3
   provider: ^6.1.5
   crypto: ^3.0.3
-  sqflite: ^2.4.2
+  sqflite: ^2.3.3
   path: ^1.9.1
   
-  # AdMob Integration
-  google_mobile_ads: ^5.3.0
-  
-  # In-App Purchases
+  # Monetization
+  google_mobile_ads: ^6.0.0
   in_app_purchase: ^3.1.13
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
-# Flutter configuration
 flutter:
   uses-material-design: true
   
-  # Assets configuration
   assets:
     - assets/fonts/
   
-  # Custom fonts configuration (uncomment when needed)
   fonts:
     - family: NotoSans
       fonts:

@@ -467,7 +467,9 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
 
   void _shareText() {
     if (_textController.text.isEmpty) return;
-    Share.share(_textController.text);
+    SharePlus.instance.share(ShareParams(
+      text: _textController.text,
+    ));
   }
 
   Future<void> _showPdfSettingsDialog() async {
@@ -597,7 +599,10 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
       final file = File("${output.path}/$_documentTitle.pdf");
     await file.writeAsBytes(await pdf.save());
       
-      await Share.shareXFiles([XFile(file.path)], text: 'PDF Document');
+      await SharePlus.instance.share(ShareParams(
+        text: 'PDF Document',
+        files: [XFile(file.path)],
+      ));
     } catch (e) {
       // Handle exceptions
     } finally {

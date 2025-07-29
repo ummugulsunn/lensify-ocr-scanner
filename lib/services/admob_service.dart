@@ -80,12 +80,6 @@ class AdMobService {
       return;
     }
 
-    // Debug mode check disabled for testing real ads
-    // if (kDebugMode) {
-    //   developer.log('Debug mode detected, skipping ad load');
-    //   return;
-    // }
-
     try {
       // Önceki reklamı temizle
       disposeBannerAd();
@@ -153,7 +147,7 @@ class AdMobService {
   bool get isProUser => _isProUser;
 
   /// Reklamların gösterilip gösterilmeyeceğini kontrol eder
-  bool get shouldShowAds => !_isProUser; // Removed debug mode check for production testing
+  bool get shouldShowAds => !_isProUser;
 
   /// Servis kapanırken temizlik yapar
   void dispose() {

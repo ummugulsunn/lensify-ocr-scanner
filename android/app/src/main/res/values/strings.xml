@@ -1,19 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Lensify</string>
-    
-    <!-- Widget Strings -->
-    <string name="widget_description">Lensify OCR Quick Actions</string>
-    <string name="widget_title">Lensify</string>
-    <string name="widget_camera">Kamera</string>
-    <string name="widget_gallery">Galeri</string>
-    <string name="widget_history">Geçmiş</string>
-    <string name="widget_camera_desc">Kamera ile OCR</string>
-    <string name="widget_gallery_desc">Galeri ile OCR</string>
-    <string name="widget_history_desc">OCR Geçmişi</string>
-    
-    <!-- Widget Actions -->
-    <string name="widget_action_camera">widget_camera</string>
-    <string name="widget_action_gallery">widget_gallery</string>
-    <string name="widget_action_history">widget_history</string>
+    <string name="app_description">OCR Scanner &amp; PDF Generator</string>
 </resources> 

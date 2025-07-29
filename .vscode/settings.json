@@ -1,20 +1,12 @@
 {
-  "dart.flutterSdkPath": "/opt/homebrew/Caskroom/flutter/3.29.3/flutter",
-  "java.configuration.runtimes": [
-    {
-      "name": "JavaSE-21",
-      "path": "/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home"
-    }
-  ],
-  "java.compile.nullAnalysis.mode": "automatic",
-  "files.exclude": {
-    "**/.gradle": true,
-    "**/build": true,
-    "**/.dart_tool": true,
-    "**/android/.gradle": true,
-    "**/android/build": true,
-    "**/ios/build": true
-  },
-  "java.configuration.updateBuildConfiguration": "automatic",
-  "cmake.ignoreCMakeListsMissing": true
+    "dart.flutterSdkPath": "/opt/homebrew/Caskroom/flutter/3.29.3/flutter",
+    "dart.sdkPath": "/opt/homebrew/Caskroom/flutter/3.29.3/flutter/bin/cache/dart-sdk",
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-17",
+            "path": "/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home"
+        }
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "cmake.ignoreCMakeListsMissing": true
 } 
