@@ -30,20 +30,21 @@
 - **Localization**: Multi-language support (EN/TR)
 - **Accessibility**: Full accessibility support
 
-### Monetization
-- **Credit System**: Freemium model with credit-based usage
-- **In-App Purchases**: Premium subscriptions and credit packages
-- **AdMob Integration**: Banner ads with upgrade prompts
-- **Widget Support**: Home screen widget for quick access
+### User Experience
+- **Modern UI**: Beautiful gradient design with glass morphism effects
+- **Dark/Light Theme**: Automatic theme switching
+- **Animations**: Smooth animations and transitions
+- **Localization**: Multi-language support (EN/TR)
+- **Accessibility**: Full accessibility support
 
 ## 📱 Screenshots
 
 <div align="center">
-  <img src="play_store_metadata/screenshots/phone/01_main_ocr_screen.png" width="200" alt="Main OCR Screen">
-  <img src="play_store_metadata/screenshots/phone/02_text_editor_screen.png" width="200" alt="Text Editor">
-  <img src="play_store_metadata/screenshots/phone/03_ocr_settings_screen.png" width="200" alt="OCR Settings">
-  <img src="play_store_metadata/screenshots/phone/04_settings_credits_screen.png" width="200" alt="Credits Screen">
-  <img src="play_store_metadata/screenshots/phone/05_handwriting_recognition_screen.png" width="200" alt="Handwriting Recognition">
+  <img src="screenshots/screenshot1_offline_privacy.png" width="200" alt="Offline Privacy - Works Offline, Protects Your Privacy">
+  <img src="screenshots/screenshot2_export_pdf_word.png" width="200" alt="Export to PDF & Word">
+  <img src="screenshots/screenshot3_handwriting_recognition.png" width="200" alt="Handwriting Recognition">
+  <img src="screenshots/screenshot4_easy_to_use.png" width="200" alt="Easy to learn, easy to use">
+  <img src="screenshots/screenshot5_convert_photo_to_text.png" width="200" alt="Convert Photo to Text">
 </div>
 
 ## 🏗️ Architecture
@@ -72,11 +73,11 @@ lib/
 - Handwriting recognition support
 - Performance optimization
 
-#### Credit Manager (`lib/services/credit_manager.dart`)
-- Freemium business model
-- Credit tracking and validation
-- Subscription management
-- Usage analytics
+#### Performance Monitor (`lib/utils/performance_monitor.dart`)
+- Real-time performance tracking
+- Memory usage monitoring
+- Operation timing
+- Performance analytics
 
 #### Performance Monitor (`lib/utils/performance_monitor.dart`)
 - Real-time performance tracking
@@ -133,18 +134,8 @@ lib/
 Create a `.env.local` file with the following variables:
 
 ```env
-# AdMob Configuration
-ADMOB_APP_ID=ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy
-ADMOB_BANNER_ID=ca-app-pub-xxxxxxxxxxxxxxxx/zzzzzzzzzz
-
-# Google Cloud Vision API (Premium Feature)
+# Google Cloud Vision API (Optional)
 GOOGLE_CLOUD_VISION_API_KEY=your_cloud_vision_api_key
-
-# In-App Purchase IDs
-IAP_PREMIUM_MONTHLY=premium_monthly
-IAP_PREMIUM_YEARLY=premium_yearly
-IAP_CREDITS_100=credits_100
-IAP_CREDITS_500=credits_500
 
 # Debug Mode
 NEXT_PUBLIC_DEBUG_MODE=true
@@ -160,22 +151,22 @@ The app supports four OCR quality modes:
 1. **Fast** (Google ML Kit only)
    - Quickest processing
    - Good for simple text
-   - 1 credit per image
+   - Free processing
 
 2. **Balanced** (Dual engine)
    - ML Kit + Tesseract
-   - Best value for money
-   - 2 credits per image
+   - Best value for accuracy
+   - Free processing
 
 3. **Accurate** (All engines)
    - All available engines
    - Highest accuracy
-   - 3 credits per image
+   - Free processing
 
 4. **Premium** (Cloud Vision)
    - Cloud Vision API included
    - Maximum accuracy
-   - 5 credits per image
+   - Free processing
 
 ### Image Enhancement Levels
 
