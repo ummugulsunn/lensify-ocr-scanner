@@ -40,11 +40,11 @@
 ## 📱 Screenshots
 
 <div align="center">
-  <img src="./screenshots/screenshot1_offline_privacy.png" width="200" alt="Offline Privacy - Works Offline, Protects Your Privacy">
-  <img src="./screenshots/screenshot2_export_pdf_word.png" width="200" alt="Export to PDF & Word">
-  <img src="./screenshots/screenshot3_handwriting_recognition.png" width="200" alt="Handwriting Recognition">
-  <img src="./screenshots/screenshot4_easy_to_use.png" width="200" alt="Easy to learn, easy to use">
-  <img src="./screenshots/screenshot5_convert_photo_to_text.png" width="200" alt="Convert Photo to Text">
+  <img src="https://raw.githubusercontent.com/ummugulsunn/lensify-ocr-scanner/master/screenshots/screenshot1_offline_privacy.png" width="200" alt="Offline Privacy - Works Offline, Protects Your Privacy">
+  <img src="https://raw.githubusercontent.com/ummugulsunn/lensify-ocr-scanner/master/screenshots/screenshot2_export_pdf_word.png" width="200" alt="Export to PDF & Word">
+  <img src="https://raw.githubusercontent.com/ummugulsunn/lensify-ocr-scanner/master/screenshots/screenshot3_handwriting_recognition.png" width="200" alt="Handwriting Recognition">
+  <img src="https://raw.githubusercontent.com/ummugulsunn/lensify-ocr-scanner/master/screenshots/screenshot4_easy_to_use.png" width="200" alt="Easy to learn, easy to use">
+  <img src="https://raw.githubusercontent.com/ummugulsunn/lensify-ocr-scanner/master/screenshots/screenshot5_convert_photo_to_text.png" width="200" alt="Convert Photo to Text">
 </div>
 
 ## 🏗️ Architecture
