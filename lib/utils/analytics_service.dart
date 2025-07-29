@@ -12,7 +12,6 @@ class AnalyticsService {
   AnalyticsService._internal();
 
   static const String _analyticsKey = 'analytics_data';
-  static const String _sessionKey = 'session_data';
   static const int _maxEventsPerSession = 100;
   static const Duration _flushInterval = Duration(minutes: 5);
 
@@ -416,4 +415,4 @@ class AnalyticsSummary {
 enum OCRType {
   single,
   batch,
-} 
+}
