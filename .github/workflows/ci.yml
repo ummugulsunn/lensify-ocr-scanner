@@ -190,7 +190,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-android, build-ios, security-scan, performance-test]
     if: github.ref == 'refs/heads/develop'
-    environment: staging
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -213,7 +212,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-android, build-ios, security-scan, performance-test]
     if: github.ref == 'refs/heads/main'
-    environment: production
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -272,4 +270,4 @@ jobs:
           echo "❌ Build or deployment failed!"
           echo "Branch: ${{ github.ref }}"
           echo "Commit: ${{ github.sha }}"
-          echo "Run number: ${{ github.run_number }}" 
+          echo "Run number: ${{ github.run_number }}"
