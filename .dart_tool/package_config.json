@@ -119,7 +119,7 @@
       "name": "flutter",
       "rootUri": "file:///opt/homebrew/Caskroom/flutter/3.29.3/flutter/packages/flutter",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.8"
     },
     {
       "name": "flutter_lints",
@@ -131,7 +131,7 @@
       "name": "flutter_localizations",
       "rootUri": "file:///opt/homebrew/Caskroom/flutter/3.29.3/flutter/packages/flutter_localizations",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.8"
     },
     {
       "name": "flutter_plugin_android_lifecycle",
@@ -149,13 +149,13 @@
       "name": "flutter_test",
       "rootUri": "file:///opt/homebrew/Caskroom/flutter/3.29.3/flutter/packages/flutter_test",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.8"
     },
     {
       "name": "flutter_web_plugins",
       "rootUri": "file:///opt/homebrew/Caskroom/flutter/3.29.3/flutter/packages/flutter_web_plugins",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.8"
     },
     {
       "name": "google_mlkit_commons",
@@ -201,51 +201,51 @@
     },
     {
       "name": "image_picker",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker-1.1.2",
-      "packageUri": "lib/",
-      "languageVersion": "3.3"
-    },
-    {
-      "name": "image_picker_android",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+24",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker-1.2.0",
       "packageUri": "lib/",
       "languageVersion": "3.6"
     },
     {
-      "name": "image_picker_for_web",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker_for_web-3.0.6",
+      "name": "image_picker_android",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker_android-0.8.13+1",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "3.7"
+    },
+    {
+      "name": "image_picker_for_web",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker_for_web-3.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
     },
     {
       "name": "image_picker_ios",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker_ios-0.8.12+2",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker_ios-0.8.13",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "3.6"
     },
     {
       "name": "image_picker_linux",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker_linux-0.2.1+2",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker_linux-0.2.2",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "3.6"
     },
     {
       "name": "image_picker_macos",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker_macos-0.2.1+2",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker_macos-0.2.2",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "3.6"
     },
     {
       "name": "image_picker_platform_interface",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker_platform_interface-2.10.1",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker_platform_interface-2.11.0",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "3.6"
     },
     {
       "name": "image_picker_windows",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker_windows-0.2.1+1",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/image_picker_windows-0.2.2",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
+      "languageVersion": "3.6"
     },
     {
       "name": "in_app_purchase",
@@ -285,19 +285,19 @@
     },
     {
       "name": "leak_tracker",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/leak_tracker-10.0.9",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/leak_tracker-11.0.1",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "leak_tracker_flutter_testing",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/leak_tracker_flutter_testing-3.0.9",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/leak_tracker_flutter_testing-3.0.10",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
     {
       "name": "leak_tracker_testing",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/leak_tracker_testing-3.0.1",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/leak_tracker_testing-3.0.2",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
@@ -453,7 +453,7 @@
     },
     {
       "name": "provider",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/provider-6.1.5",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/provider-6.1.5+1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -465,13 +465,13 @@
     },
     {
       "name": "share_plus",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/share_plus-11.0.0",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/share_plus-11.1.0",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
     {
       "name": "share_plus_platform_interface",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/share_plus_platform_interface-6.0.0",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/share_plus_platform_interface-6.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
@@ -521,7 +521,7 @@
       "name": "sky_engine",
       "rootUri": "file:///opt/homebrew/Caskroom/flutter/3.29.3/flutter/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.8"
     },
     {
       "name": "source_span",
@@ -597,7 +597,7 @@
     },
     {
       "name": "test_api",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/test_api-0.7.4",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/test_api-0.7.6",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },
@@ -639,9 +639,9 @@
     },
     {
       "name": "vector_math",
-      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/vector_math-2.1.4",
+      "rootUri": "file:///Users/ummugulsun/.pub-cache/hosted/pub.dev/vector_math-2.2.0",
       "packageUri": "lib/",
-      "languageVersion": "2.14"
+      "languageVersion": "3.1"
     },
     {
       "name": "vm_service",
@@ -705,8 +705,8 @@
     }
   ],
   "generator": "pub",
-  "generatorVersion": "3.8.1",
+  "generatorVersion": "3.9.0",
   "flutterRoot": "file:///opt/homebrew/Caskroom/flutter/3.29.3/flutter",
-  "flutterVersion": "3.32.7",
+  "flutterVersion": "3.35.1",
   "pubCache": "file:///Users/ummugulsun/.pub-cache"
 }

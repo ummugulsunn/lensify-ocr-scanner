@@ -689,7 +689,7 @@ class _OCRHistoryScreenState extends State<OCRHistoryScreen>
           children: [
             // Category filter
             DropdownButtonFormField<String>(
-              value: _selectedCategory,
+              initialValue: _selectedCategory,
               decoration: InputDecoration(labelText: context.l10n.category),
               items: [
                 DropdownMenuItem(value: null, child: Text(context.l10n.all)),

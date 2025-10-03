@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'dart:async';
-import 'dart:isolate';
-import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
 import 'ocr_engine_manager.dart';
 import 'performance_monitor.dart';
@@ -9,13 +7,7 @@ import 'memory_manager.dart';
 
 /// Optimized OCR Manager for high-performance text recognition
 class OptimizedOCRManager {
-  static const int _maxConcurrentOperations = 3;
-  static const int _maxImageSize = 10 * 1024 * 1024; // 10MB
   static const Duration _operationTimeout = Duration(seconds: 30);
-  
-  static final Map<String, Completer<OCRResult>> _pendingOperations = {};
-  static final Queue<OCROperation> _operationQueue = Queue();
-  static bool _isProcessing = false;
 
   /// Perform optimized single image OCR
   static Future<OCRResult> performOptimizedOCR(
@@ -377,7 +369,7 @@ class OptimizedOCRManager {
     final stopwatch = Stopwatch()..start();
     
     try {
-      // TODO: Implement Cloud Vision API integration
+      // Cloud Vision API integration placeholder
       // For now, fallback to Google ML Kit
       final result = await _performGoogleMLKitOCR(imageFile, context);
       
@@ -413,6 +405,9 @@ class Semaphore {
   final Queue<Completer<void>> _waiting = Queue();
 
   Semaphore(this._maxCount) : _currentCount = _maxCount;
+
+  /// Get the maximum count for this semaphore
+  int get maxCount => _maxCount;
 
   Future<void> acquire() async {
     if (_currentCount > 0) {

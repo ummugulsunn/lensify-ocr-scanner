@@ -4,90 +4,163 @@
 Lensify: OCR & PDF Maker
 
 ## Short Description (80 characters max)
-OCR Tarayıcı: Fotoğraftan Metne, PDF Oluşturucu, Çoklu Dil Desteği
+OCR Scanner: Photo to Text, PDF Maker, Multi-Language Support
 
 ## Full Description (4000 characters max)
-📱 **Lensify OCR Scanner** - Fotoğraflarınızı anında metne dönüştüren profesyonel OCR tarayıcı uygulaması!
+Lensify OCR Scanner - Professional OCR scanner app that instantly converts your photos to text.
 
-🔥 **ÖNE ÇIKAN ÖZELLİKLER:**
-✅ **Yüksek Doğruluk OCR** - Google ML Kit + Tesseract teknolojisi
-✅ **PDF Oluşturucu** - Metinlerinizi profesyonel PDF'lere dönüştürün
-✅ **Çoklu Dil Desteği** - Türkçe, İngilizce ve 100+ dil
-✅ **El Yazısı Tanıma** - El yazısı metinleri de okur
-✅ **Doküman Tarayıcı** - Belgelerinizi dijitalleştirin
-✅ **Toplu İşleme** - Birden fazla görüntüyü aynı anda işleyin
+KEY FEATURES:
+- High Accuracy OCR using Google ML Kit and Tesseract technology
+- PDF Creator to convert texts to professional PDFs
+- Multi-Language Support for Turkish, English and 100+ languages
+- Handwriting Recognition for handwritten texts
+- Document Scanner to digitize your documents
+- Batch Processing for multiple images at once
 
-🎯 **KULLANIM ALANLARI:**
-📚 Kitap ve dergi metinlerini dijitalleştirme
-📄 Belgelerinizi PDF'e dönüştürme  
-📝 Notlarınızı düzenlenebilir metne çevirme
-💼 İş belgelerini dijital arşivleme
-🎓 Öğrenci notları ve ders materyalleri
-📋 Fatura ve makbuzları kaydetme
+USE CASES:
+- Digitizing book and magazine texts
+- Converting documents to PDF format
+- Converting notes to editable text
+- Digital archiving of business documents
+- Student notes and course materials
+- Recording invoices and receipts
 
-⚡ **GELİŞMİŞ ÖZELLİKLER:**
-🔧 **4 OCR Kalite Seviyesi** - Hızlı, Dengeli, Doğru, Premium
-🖼️ **Görüntü İyileştirme** - Otomatik kontrast ve netlik artırma
-💾 **Geçmiş Yönetimi** - Tüm OCR işlemlerinizi saklayın
-🔍 **Akıllı Arama** - Geçmişinizde hızlı arama yapın
-🎨 **Koyu/Açık Tema** - Gözlerinizi koruyun
-📱 **Modern Tasarım** - Kullanıcı dostu arayüz
+ADVANCED FEATURES:
+- 4 OCR Quality Levels: Fast, Balanced, Accurate, Premium
+- Image Enhancement with automatic contrast and sharpness improvement
+- History Management to save all OCR operations
+- Smart Search for quick history lookup
+- Dark and Light Theme options
+- Modern user-friendly interface
 
-💰 **ABONELİK PLANLARI:**
-🆓 **Ücretsiz** - Günlük 10 kredi, reklamlı
-⭐ **Pro Plan** - Sınırsız OCR, reklamsız deneyim
-💎 **Premium Plan** - Tüm özellikler + öncelikli destek
+SUBSCRIPTION PLANS:
+- Free Plan: Daily 10 credits with ads
+- Pro Plan: Unlimited OCR with ad-free experience
+- Premium Plan: All features plus priority support
 
-🔒 **GÜVENLİK & GİZLİLİK:**
-• Verileriniz cihazınızda güvende
-• İsteğe bağlı bulut yedekleme
-• GDPR uyumlu gizlilik politikası
+SECURITY AND PRIVACY:
+- Your data stays safe on your device
+- Optional cloud backup available
+- GDPR compliant privacy policy
 
-🚀 **NEDEN LENSİFY?**
-✓ %99+ OCR doğruluğu
-✓ Anında sonuç alma
-✓ Offline çalışma desteği
-✓ Sürekli güncellenen AI teknolojisi
-✓ 7/24 müşteri desteği
-✓ Türkiye'de geliştirildi
+WHY CHOOSE LENSIFY:
+- 99%+ OCR accuracy rate
+- Instant results processing
+- Offline operation support
+- Continuously updated AI technology
+- 24/7 customer support
+- Developed in Turkey
 
-📱 **DESTEKLENEN FORMATLAR:**
-• Giriş: JPG, PNG, WebP, HEIC
-• Çıkış: TXT, PDF, DOC
-• OCR Dilleri: 100+ dil desteği
+SUPPORTED FORMATS:
+- Input formats: JPG, PNG, WebP, HEIC
+- Output formats: TXT, PDF, DOC
+- OCR Languages: 100+ language support
 
-🎓 **KİMLER KULLANABİLİR:**
-👥 Öğrenciler - Ders notları için
-💼 Profesyoneller - İş belgeleri için  
-📚 Araştırmacılar - Kaynak tarama için
-👨‍💻 Geliştiriciler - Kod documentation için
-🏢 İşletmeler - Belge dijitalleştirme için
+TARGET USERS:
+- Students for lecture notes digitization
+- Professionals for business document management
+- Researchers for source material scanning
+- Developers for code documentation
+- Businesses for document digitization
 
-⭐ **KULLANICI YORUMLARI:**
+USER REVIEWS:
+"Great for digitizing my notes as a student!" - Ayşe K.
+"Converting my business documents to PDF was so easy!" - Mehmet S.
+"It even recognizes my handwriting, amazing!" - Fatma T.
+
+REGULAR UPDATES:
+- Continuous AI model improvements
+- New language support additions
+- Feature development based on user feedback
+
+USAGE TIP:
+For best results, take your images in good lighting and ensure the entire text is within the frame.
+
+SUPPORT:
+For any questions contact: lensify.support@gmail.com
+
+AWARD-WINNING APP
+2024 Best Turkish Mobile App Nominee
+
+Download and experience Lensify today!
+
+## Turkish Description (for Turkish market)
+Lensify OCR Tarayıcı - Fotoğraflarınızı anında metne dönüştüren profesyonel OCR tarayıcı uygulaması.
+
+TEMEL ÖZELLİKLER:
+- Yüksek Doğruluk OCR - Google ML Kit ve Tesseract teknolojisi
+- PDF Oluşturucu - Metinlerinizi profesyonel PDF'lere dönüştürün
+- Çoklu Dil Desteği - Türkçe, İngilizce ve 100+ dil
+- El Yazısı Tanıma - El yazısı metinleri de okur
+- Doküman Tarayıcı - Belgelerinizi dijitalleştirin
+- Toplu İşleme - Birden fazla görüntüyü aynı anda işleyin
+
+KULLANIM ALANLARI:
+- Kitap ve dergi metinlerini dijitalleştirme
+- Belgelerinizi PDF'e dönüştürme
+- Notlarınızı düzenlenebilir metne çevirme
+- İş belgelerini dijital arşivleme
+- Öğrenci notları ve ders materyalleri
+- Fatura ve makbuzları kaydetme
+
+GELİŞMİŞ ÖZELLİKLER:
+- 4 OCR Kalite Seviyesi: Hızlı, Dengeli, Doğru, Premium
+- Görüntü İyileştirme - Otomatik kontrast ve netlik artırma
+- Geçmiş Yönetimi - Tüm OCR işlemlerinizi saklayın
+- Akıllı Arama - Geçmişinizde hızlı arama yapın
+- Koyu ve Açık Tema seçenekleri
+- Modern kullanıcı dostu arayüz
+
+ABONELİK PLANLARI:
+- Ücretsiz Plan: Günlük 10 kredi, reklamlı
+- Pro Plan: Sınırsız OCR, reklamsız deneyim
+- Premium Plan: Tüm özellikler artı öncelikli destek
+
+GÜVENLİK VE GİZLİLİK:
+- Verileriniz cihazınızda güvende kalır
+- İsteğe bağlı bulut yedekleme mevcut
+- GDPR uyumlu gizlilik politikası
+
+NEDEN LENSİFY:
+- Yüzde 99+ OCR doğruluk oranı
+- Anında sonuç işleme
+- Offline çalışma desteği
+- Sürekli güncellenen AI teknolojisi
+- 7/24 müşteri desteği
+- Türkiye'de geliştirildi
+
+DESTEKLENEN FORMATLAR:
+- Giriş formatları: JPG, PNG, WebP, HEIC
+- Çıkış formatları: TXT, PDF, DOC
+- OCR Dilleri: 100+ dil desteği
+
+HEDEF KULLANICILAR:
+- Öğrenciler - Ders notları dijitalleştirme için
+- Profesyoneller - İş belgesi yönetimi için
+- Araştırmacılar - Kaynak materyal tarama için
+- Geliştiriciler - Kod dokümantasyonu için
+- İşletmeler - Belge dijitalleştirme için
+
+KULLANICI YORUMLARI:
 "Öğrenci olarak notlarımı dijitalleştirmek için harika!" - Ayşe K.
 "İş belgelerimi PDF'e çevirmek çok kolay oldu!" - Mehmet S.
 "El yazımı bile tanıyor, şaşırtıcı!" - Fatma T.
 
-🔄 **GÜNCELLEMELER:**
-• Sürekli AI model iyileştirmeleri
-• Yeni dil desteği ekleniyor
-• Kullanıcı geri bildirimlerine göre özellik geliştirme
+DÜZENLİ GÜNCELLEMELER:
+- Sürekli AI model iyileştirmeleri
+- Yeni dil desteği eklemeleri
+- Kullanıcı geri bildirimlerine göre özellik geliştirme
 
-💡 **İPUCU:**
+KULLANIM İPUCU:
 En iyi sonuçlar için görüntülerinizi iyi ışıkta çekin ve metnin tamamının çerçeve içinde olduğundan emin olun.
 
-📞 **DESTEK:**
+DESTEK:
 Herhangi bir sorunuz için: lensify.support@gmail.com
 
-🏆 **ÖDÜLLENDİRİLMİŞ UYGULAMA**
+ÖDÜLLENDİRİLMİŞ UYGULAMA
 2024 En İyi Türk Mobil Uygulaması Adayı
 
----
-
-**Anahtar Kelimeler:**
-OCR tarayıcı, PDF oluşturucu, metin tanıma, doküman tarayıcı, fotoğraftan metin, el yazısı tanıma, belge dijitalleştirme, QR kod okuyucu, Türkçe OCR, çoklu dil, offline OCR, AI metin tanıma, akıllı tarayıcı, mobil tarayıcı, ücretsiz OCR
-
-**İndirin ve deneyimleyin! 📲**
+Lensify'ı indirin ve deneyimleyin!
 
 ## App Category
 Primary: Productivity

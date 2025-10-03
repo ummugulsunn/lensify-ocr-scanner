@@ -508,7 +508,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                   ],
                 ),
                 DropdownButtonFormField<PdfPageFormat>(
-                  value: _pageFormat,
+                  initialValue: _pageFormat,
                   decoration: InputDecoration(
                     labelText: widget.l10n.pageFormat,
                     border: const OutlineInputBorder(),

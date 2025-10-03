@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'dart:typed_data';
-import '../lib/utils/ocr_engine_manager.dart';
+import 'package:lensify/utils/ocr_engine_manager.dart';
 
 void main() {
   group('OCR Engine Manager Tests', () {

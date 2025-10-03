@@ -2,7 +2,7 @@ name: lensify
 description: "Lensify - Professional OCR Scanner & PDF Generator"
 publish_to: 'none'
 
-version: 1.1.0+3
+version: 1.1.1+4
 
 environment:
   sdk: ^3.7.2
@@ -17,7 +17,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   
   # Image & Camera
-  image_picker: ^1.1.2
+  image_picker: ^1.2.0
   permission_handler: ^12.0.1
   image: ^4.1.7
   
@@ -29,11 +29,11 @@ dependencies:
   # PDF & File Operations
   pdf: ^3.10.8
   path_provider: ^2.1.2
-  share_plus: ^11.0.0
+  share_plus: ^11.1.0
   
   # State Management & Storage
   shared_preferences: ^2.3.3
-  provider: ^6.1.5
+  provider: ^6.1.5+1
   crypto: ^3.0.3
   sqflite: ^2.3.3
   path: ^1.9.1

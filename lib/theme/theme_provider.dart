@@ -131,19 +131,15 @@ class ThemeProvider extends ChangeNotifier {
     }
   }
   
-  /// Sistem UI'sini güncelle (status bar, navigation bar)
+  /// Sistem UI'sini güncelle (Android 15 compatible)
   void _updateSystemUI() {
-    // Bu method context gerektirmediği için generic bir yapı kullanıyoruz
-    // Gerçek implementation'da context'e göre ayarlanacak
+    // Android 15'te deprecated olan API'leri kullanmıyoruz
+    // Edge-to-edge desteği MainActivity'de yapılıyor
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
         statusBarIconBrightness: _themeMode == AppThemeMode.dark 
             ? Brightness.light 
             : Brightness.dark,
-        systemNavigationBarColor: _themeMode == AppThemeMode.dark 
-            ? const Color(0xFF0F172A) 
-            : const Color(0xFFF8FAFC),
         systemNavigationBarIconBrightness: _themeMode == AppThemeMode.dark 
             ? Brightness.light 
             : Brightness.dark,
@@ -151,16 +147,12 @@ class ThemeProvider extends ChangeNotifier {
     );
   }
   
-  /// Context'li sistem UI güncelleme
+  /// Context'li sistem UI güncelleme (Android 15 compatible)
   void updateSystemUIWithContext(BuildContext context) {
     final isDark = isDarkMode(context);
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
         statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-        systemNavigationBarColor: isDark 
-            ? const Color(0xFF0F172A) 
-            : const Color(0xFFF8FAFC),
         systemNavigationBarIconBrightness: isDark 
             ? Brightness.light 
             : Brightness.dark,

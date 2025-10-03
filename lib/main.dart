@@ -1124,7 +1124,7 @@ class _OCRHomePageState extends State<OCRHomePage> {
                 _isHandwritingMode = value;
               });
             },
-            activeColor: Colors.white,
+            activeThumbColor: Colors.white,
             activeTrackColor: Colors.white.withValues(alpha: 0.3),
             inactiveThumbColor: Colors.white70,
             inactiveTrackColor: Colors.white.withValues(alpha: 0.1),

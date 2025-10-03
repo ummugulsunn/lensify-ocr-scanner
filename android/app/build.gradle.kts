@@ -16,7 +16,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.lensify.ocr_scanner"
-    compileSdk = 35
+    compileSdk = 36
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -35,11 +35,16 @@ android {
 
     defaultConfig {
         applicationId = "com.lensify.ocr_scanner"
-        minSdk = 23
+        minSdkVersion(flutter.minSdkVersion)
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.1.0"
+        versionCode = 2210
+        versionName = "1.1.1"
         multiDexEnabled = true
+        
+        // 16KB page size support
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
+        }
     }
 
     signingConfigs {

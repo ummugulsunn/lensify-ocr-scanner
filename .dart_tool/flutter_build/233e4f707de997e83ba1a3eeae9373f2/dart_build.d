@@ -1,0 +1,1 @@
+ /Users/ummugulsun/lensify-ocr-scanner/.dart_tool/flutter_build/233e4f707de997e83ba1a3eeae9373f2/dart_build_result.json: 
